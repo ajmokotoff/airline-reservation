@@ -13,12 +13,19 @@ import java.net.URL;
  *
  */
 public class Accessor{
+    // singleton pattern
+    private static Accessor _instance=null;
     private QueryFactory queryFactory;
     private final  String prefix="http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem";
 
-    public Accessor(){
+    private Accessor(){
         queryFactory=new QueryFactory();
     }
+    public static Accessor get_instance(){
+        if (_instance==null) _instance=new Accessor();
+        return _instance;
+    }
+
     // given http get query string, return the XML string.
     // ResetDB will use this function since it is a GET request, but no string returned.
     private String httpGet(String query) {

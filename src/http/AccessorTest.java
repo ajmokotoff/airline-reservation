@@ -3,7 +3,7 @@ package http;
 public class AccessorTest {
 
     public static void main(String[] args) {
-        Accessor accessor = new Accessor();
+        Accessor accessor =Accessor.get_instance();
 
         System.out.println(accessor.getAirports());
         System.out.println(accessor.getAirplanes());
