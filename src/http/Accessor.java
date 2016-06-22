@@ -4,19 +4,26 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/*
- * Post is not finished yet.(lock/unlock/ reserve seat)
- *
- * Accessor is responsible for generating all kinds of http requests and return XML text.
- * QueryFactory is an element of Accessor, who is responsible for generating get http string.
- * Further parsing will be done by DataFactory class.
- *
+/**
+ * Accessing WPI server API to get flight, airport, and airplane in form of XML
+ * <p>
+ *     Accessor is responsible for generating all kinds of http requests and return XML text.
+ *     QueryFactory is an element of Accessor, who is responsible for generating get http string.
+ *     Further parsing will be done by DataFactory class. Accessor follows singleton pattern
+ * </p>
+ * @author vincent
+ * @since 06/20/2016
  */
 public class Accessor{
-    // singleton pattern
+    /**
+     * singleton instance
+     */
     private static Accessor _instance=null;
     private QueryFactory queryFactory;
-    private final  String prefix="http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem";
+    /**
+     * server url
+     */
+    private final String prefix="http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem";
 
     private Accessor(){
         queryFactory=new QueryFactory();
@@ -26,8 +33,16 @@ public class Accessor{
         return _instance;
     }
 
-    // given http get query string, return the XML string.
-    // ResetDB will use this function since it is a GET request, but no string returned.
+    /**
+     * Make http get request
+     * <p>
+     *     Given http get query string, return the XML string.
+     *     ResetDB will use this function since it is a GET request, but no string returned.
+     *     All get request function will call this function.
+     * </p>
+     * @param query a string from QueryFactory to request with GET
+     * @return request text content
+     */
     private String httpGet(String query) {
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         try {
@@ -49,6 +64,16 @@ public class Accessor{
         return buf.toString();
     }
 
+    /**
+     * Make http post request
+     * <p>
+     *     Given http post query string, connect with server,
+     *     and return if connection succeed.
+     *     Lock/unlock DB will call this method.
+     * </p>
+     * @param params a string from QueryFactory to request with POST
+     * @return if connection works
+     */
     public boolean httpPost(String params) {
         URL url;
         HttpURLConnection connection;
@@ -93,36 +118,69 @@ public class Accessor{
         return true;
     }
 
+    /**
+     * Get all airports info. in form of XML.
+     * @return XML string
+     */
     public String getAirports(){
         return httpGet(prefix+"?"+queryFactory.getAirportString());
     }
 
+    /**
+     * Get all airplanes info. in form of XML.
+     * @return XML string
+     */
     public String getAirplanes(){
         return httpGet(prefix+"?"+queryFactory.getAirplaneString());
     }
 
+    /**
+     * Get all flights info. departing from the same airport on the same day.
+     * @return XML string
+     */
     public String getDepartingFlights(String code, int yyyy, int mm, int dd){
         return httpGet(prefix+"?"+queryFactory.getDepartingString(code,yyyy,mm,dd));
     }
 
+    /**
+     * Get all flights info. arriving from the same airport on the same day.
+     * @return XML string
+     */
     public String getArrivingFlights(String code, int yyyy, int mm, int dd){
         return httpGet(prefix+"?"+queryFactory.getArrivingString(code,yyyy,mm,dd));
     }
 
+    /**
+     * reset Team02's database.
+     */
     public void reset(){
         httpGet(prefix+"?"+queryFactory.getReset());
     }
 
+    /**
+     * lock the DB before reserve the saet
+     * @return if the lock operation succeeds.
+     */
     public boolean lockDB (){
         System.out.println("\nSending 'POST' to lock database");
         return httpPost(queryFactory.getLock());
     }
 
+    /**
+     * unlock the DB after reserve the saet
+     * @return if the unlock operation succeeds.
+     */
     public boolean unlockDB(){
         System.out.println("\nSending 'POST' to unlock database");
         return httpPost(queryFactory.getUnlock());
     }
 
+    /**
+     *
+     * @param flightNumber flight number
+     * @param isCoach bool value to indicate coach or first
+     * @return if reserving succeeds
+     */
     public boolean reserveSeat(String flightNumber, boolean isCoach) {
         URL url;
         HttpURLConnection connection;
@@ -162,9 +220,18 @@ public class Accessor{
     }
 }
 
-// QueryFactory is an element of Accessor, who is responsible for generating get http string.
+/**
+ * Generate http query string
+ * <p>
+ *     QueryFactory is an element of Accessor, who is responsible for generating get http string.
+ * </p>
+ * @author vincent
+ * @since 06/20/2016
+ */
 class QueryFactory{
-    // all the get url strings
+    /**
+     * our team is team02
+     */
     private String team = "team=Team02";
 
     QueryFactory(){}//package locally
