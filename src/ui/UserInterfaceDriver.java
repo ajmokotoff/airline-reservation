@@ -18,6 +18,8 @@ public class UserInterfaceDriver {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        //JFrame window = new MainJFrame();
+        
         JFrame window = new MainJFrame();
         window.setDefaultCloseOperation(EXIT_ON_CLOSE);
         window.setVisible(true);
