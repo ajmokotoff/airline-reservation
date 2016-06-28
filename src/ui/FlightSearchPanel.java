@@ -19,6 +19,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
+import search.FlightPlan;
 
 /**
  *
@@ -57,9 +58,9 @@ public class FlightSearchPanel extends javax.swing.JPanel {
         
     }
 
-    public void updateFlightResults(List<Flight> flightList) {
+    public void updateFlightResults(List<FlightPlan> flightPlanList) {
         removeAll();
-        searchResultsPanel.updateFlightResults(flightList);
+        searchResultsPanel.updateFlightResults(flightPlanList);
         add(searchResultsPanel);
     }
     

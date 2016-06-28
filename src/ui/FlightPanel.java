@@ -6,6 +6,10 @@
 package ui;
 
 import client.Flight;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import search.FlightPlan;
+import search.OneWayFlightPlan;
 
 /**
  *
@@ -13,28 +17,40 @@ import client.Flight;
  */
 public class FlightPanel extends javax.swing.JPanel {
 
+    private static SimpleDateFormat dateFormat;
+    
     /**
      * Creates new form FlightPanel
+     * @param flightPlan
      */
-    public FlightPanel(String flightNumber, double price, int numTransfers, String departTime) {
-        initComponents();
-        updatePanel(flightNumber, price, numTransfers, departTime); 
-    }
-    
-    public FlightPanel(Flight flight)
+    public FlightPanel(FlightPlan flightPlan)
     {
         // Need to have access to Flight parameters
     
         initComponents();
+    
+        dateFormat = new SimpleDateFormat("hh:mm a");
+        
+        if(flightPlan instanceof OneWayFlightPlan) {
+            OneWayFlightPlan oneWay = (OneWayFlightPlan)flightPlan;
+            Flight departureFlight = oneWay.getFlightList().get(0);
+            updatePanel(departureFlight.getFlightNo(), oneWay.getCoachPrice(), oneWay.getNumberOfTransfers(), departureFlight.getDepTime());
+            
+            for(Flight flight : oneWay.getFlightList())
+            {
+                System.out.println(flight.getFlightNo());
+            }
+            System.out.println();
+        }
     }
     
     protected FlightPanel() {}
     
-    protected final void updatePanel(String flightNumber, double price, int numTransfers, String departTime) {
+    protected final void updatePanel(String flightNumber, double price, int numTransfers, Date departTime) {
         flightNumberTextField.setText("#" + flightNumber);
-        costTextField.setText("$" + Double.toString(price));
+        costTextField.setText("$" + String.format("%.2f", price));
         numTransfersTextField.setText(getNumTransfersString(numTransfers));
-        departTimeTextField.setText(departTime);
+        departTimeTextField.setText(dateFormat.format(departTime));
     }
     
     private String getNumTransfersString(int numTransfers)

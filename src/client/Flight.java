@@ -1,5 +1,12 @@
 package client;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Flight class
  * <p>
@@ -24,15 +31,15 @@ public class Flight {
     /**
      * departing time
      */
-    private String depTime;
+    private Date depTime;
     /**
      * arriving time
      */
-    private String arrTime;
+    private Date arrTime;
     /**
      * travel time for this single trip
      */
-    private String flightTime;
+    private int flightTime;
     /**
      * airplane model
      */
@@ -52,8 +59,12 @@ public class Flight {
     /**
      * the price of coach class seat
      */
-    private double coachPrie;
+    private double coachPrice;
 
+    // Used to format the departure and arrival time Strings into Date objects
+    private static DateFormat dateFormatter = new SimpleDateFormat("yyyy MMMM dd HH:mm Z");
+    
+    
     public Flight(){}
 
     // the time need to transferring in the future, now they are saved as string
@@ -62,7 +73,7 @@ public class Flight {
      * constructor for integer type seat number and double type seat price
      */
     public Flight(String flightNo, String depCode, String arrCode,
-                  String depTime, String arrTime, String flightTime, String model, int first, int coach, double firstPrice, double coachPrice){
+                  Date depTime, Date arrTime, int flightTime, String model, int first, int coach, double firstPrice, double coachPrice){
         this.flightNo=flightNo;
         this.depCode=depCode;
         this.arrCode=arrCode;
@@ -73,7 +84,7 @@ public class Flight {
         this.first=first;
         this.firstPrice=firstPrice;
         this.coach=coach;
-        this.coachPrie=coachPrice;
+        this.coachPrice=coachPrice;
     }
 
     /**
@@ -81,9 +92,10 @@ public class Flight {
      */
     public Flight(String flightNo, String depCode, String arrCode,
                   String depTime, String arrTime, String flightTime, String model,
-                  String first, String coach, String  firstPrice, String coachPrice){
-        // regex is to remove all the irrelevant char
-        this(flightNo,depCode,arrCode,depTime,arrTime,flightTime,model,Integer.parseInt(first),Integer.parseInt(coach),
+                  String first, String coach, String  firstPrice, String coachPrice) throws ParseException{
+
+        this(flightNo,depCode,arrCode,dateFormatter.parse(depTime),dateFormatter.parse(arrTime),
+                Integer.parseInt(flightTime),model,Integer.parseInt(first),Integer.parseInt(coach),
                 Double.parseDouble(firstPrice.replaceAll("[^0-9\\.]","")),Double.parseDouble(coachPrice.replaceAll("[^0-9\\.\\s]","")));
     }
 
@@ -94,6 +106,59 @@ public class Flight {
     public String toString(){
         // won't print all the attributes
         return "< "+flightNo+", "+depCode+"->"+arrCode+", Model:"+model+", seat reserved (first/coach):"+first+"/"+coach+" >";
+    }
+    
+    public String getFlightNo()
+    {
+        return flightNo;
+    }
+    
+    public String getDepCode()
+    {
+        return depCode;
+    }
+    
+    public String getArrCode()
+    {
+        return arrCode;
+    }
+    
+    public Date getDepTime()
+    {
+        return depTime;
+    }
+    
+    public Date getArrTime()
+    {
+        return arrTime;
+    }
+    
+    public int getFlightTime()
+    {
+        return flightTime;
+    }
+    
+    public String getModel()
+    {
+        return model;
+    }
+    
+    public int getFirst() {
+        return first;
+    }
+    
+    public int getCoach() {
+        return coach;
+    }
+    
+    public double getFirstPrice()
+    {
+        return firstPrice;
+    }
+    
+    public double getCoachPrice()
+    {
+        return coachPrice;
     }
 
 }

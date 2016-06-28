@@ -6,6 +6,7 @@
 package ui;
 
 import client.Flight;
+import java.util.Date;
 
 /**
  *
@@ -21,7 +22,8 @@ public class ExpandedFlightPanel extends FlightPanel {
         initComponents();
     }
 
-    public void updateFlight(String flightNumber, double price, int numTransfers, String departTime) {
+    
+    public void updateFlight(String flightNumber, double price, int numTransfers, Date departTime) {
         updatePanel(flightNumber, price, numTransfers, departTime);
     }
 

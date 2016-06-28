@@ -17,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneLayout;
+import search.FlightPlan;
 
 /**
  *
@@ -81,11 +82,17 @@ public class SearchResultsPanel extends javax.swing.JPanel {
     
     
     // Currently does not use flightList, using dummy values
-    public void updateFlightResults(List<Flight> flightList) {
+    public void updateFlightResults(List<FlightPlan> flightPlanList) {
 
         
         resultsPanel.removeAll();
 
+        for(FlightPlan flightPlan : flightPlanList)
+        {
+            resultsPanel.add(getWrappedPanel(new FlightPanel(flightPlan)));
+        }
+        
+        /*
         resultsPanel.add(getWrappedPanel(new FlightPanel("01", 120.0, 1, "8:00AM")));
         
         if (!false) {
@@ -97,7 +104,7 @@ public class SearchResultsPanel extends javax.swing.JPanel {
             resultsPanel.add(getWrappedPanel(new FlightPanel("02", 120.0, 1, "8:00AM")));
             resultsPanel.add(getWrappedPanel(new FlightPanel("03", 100.0, 0, "7:00AM")));
             resultsPanel.add(getWrappedPanel(new FlightPanel("04", 120.0, 1, "8:00AM")));
-        }
+        }*/
 
     }
     

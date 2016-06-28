@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.SpinnerDateModel;
+import search.SearchResult;
+import search.Searcher;
 
 /**
  *
@@ -21,29 +23,56 @@ import javax.swing.SpinnerDateModel;
  */
 public class MainJFrame extends javax.swing.JFrame {
 
+    private enum TravelState {
+
+        ONE_WAY,
+        ROUND_TRIP
+    }
+
+    private enum SeatingClassState {
+
+        COACH,
+        FIRST_CLASS
+    }
+
+    private enum SortByState {
+
+        PRICE,
+        TIME
+    }
+
     /**
      * Creates new form MainJFrame
      */
-    
+    private Calendar calendar;
     private final FlightSearchPanel flightSearchPanel;
-    
+
+    private TravelState currentTravelState;
+    private SeatingClassState currentClassState;
+
+    private final Searcher searcher;
+
     public MainJFrame() {
 
-        
+        calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+
         initComponents();
-        
+
         flightSearchPanel = new FlightSearchPanel();
         jScrollPane.setLayout(new ScrollPaneLayout());
         jScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         jScrollPane.setViewportView(flightSearchPanel);
-        
+
+        searcher = new Searcher();
+
         toggleRoundTrip(false);
 
     }
-    
-    
-    private void toggleRoundTrip(boolean bool)
-    {
+
+    private void toggleRoundTrip(boolean bool) {
+        currentTravelState = bool ? TravelState.ROUND_TRIP : TravelState.ONE_WAY;
         toggleButtonOneWay.setSelected(!bool);
         toggleButtonRoundTrip.setSelected(bool);
         returnDateChooser.setVisible(bool);
@@ -51,15 +80,17 @@ public class MainJFrame extends javax.swing.JFrame {
         timeReturnEnd.setVisible(bool);
         jTextField2.setVisible(bool);
     }
-    
-    public void updateFlightSearchList()
-    {
-        
+
+    private void toggleCoach(boolean bool) {
+        currentClassState = bool ? SeatingClassState.COACH : SeatingClassState.FIRST_CLASS;
+        toggleButtonFirstClassSeating.setSelected(!bool);
+        toggleButtonCoachSeating.setSelected(bool);
+    }
+
+    public void updateFlightSearchList() {
         flightSearchPanel.setVisible(true);
         flightSearchPanel.updateFlightResults(null);
         jScrollPane.setViewportView(flightSearchPanel);
-
-        System.out.println("HERE");
     }
 
     /**
@@ -127,7 +158,7 @@ public class MainJFrame extends javax.swing.JFrame {
         textFieldArrivalLocation.setMinimumSize(new java.awt.Dimension(170, 20));
         textFieldArrivalLocation.setPreferredSize(new java.awt.Dimension(170, 20));
 
-        timeDepartStart.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+        timeDepartStart.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeDepartStart.setEditor(new JSpinner.DateEditor(timeDepartStart, "hh:mm a"));
         timeDepartStart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         timeDepartStart.setFocusable(false);
@@ -141,14 +172,14 @@ public class MainJFrame extends javax.swing.JFrame {
             }
         });
 
-        timeDepartEnd.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+        timeDepartEnd.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeDepartEnd.setEditor(new JSpinner.DateEditor(timeDepartEnd, "hh:mm a"));
         timeDepartEnd.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         timeDepartEnd.setFocusable(false);
 
         jPanel1.setVisible(true);
 
-        timeReturnStart.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+        timeReturnStart.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeReturnStart.setEditor(new JSpinner.DateEditor(timeReturnStart, "hh:mm a"));
         timeReturnStart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         timeReturnStart.setFocusable(false);
@@ -162,7 +193,7 @@ public class MainJFrame extends javax.swing.JFrame {
             }
         });
 
-        timeReturnEnd.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+        timeReturnEnd.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeReturnEnd.setEditor(new JSpinner.DateEditor(timeReturnEnd, "hh:mm a"));
         timeReturnEnd.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         timeReturnEnd.setFocusable(false);
@@ -276,8 +307,7 @@ public class MainJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_toggleButtonOneWayActionPerformed
 
     private void toggleButtonCoachSeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonCoachSeatingActionPerformed
-        toggleButtonFirstClassSeating.setSelected(false);
-        toggleButtonCoachSeating.setSelected(true);
+        toggleCoach(true);
     }//GEN-LAST:event_toggleButtonCoachSeatingActionPerformed
 
     private void toggleButtonRoundTripActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonRoundTripActionPerformed
@@ -285,8 +315,7 @@ public class MainJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_toggleButtonRoundTripActionPerformed
 
     private void toggleButtonFirstClassSeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonFirstClassSeatingActionPerformed
-        toggleButtonFirstClassSeating.setSelected(true);
-        toggleButtonCoachSeating.setSelected(false);
+        toggleCoach(false);
     }//GEN-LAST:event_toggleButtonFirstClassSeatingActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -298,7 +327,41 @@ public class MainJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
-        updateFlightSearchList();
+        String depCode = textFieldDepartureLocation.getText();
+        String arrCode = textFieldArrivalLocation.getText();
+
+        Date depDate = departureDateChooser.getDate();
+
+        if (depDate == null) {
+            return;
+        }
+
+        if (currentTravelState.equals(TravelState.ONE_WAY)) {
+            System.out.println("SEARCH : [Depart Flight] " + depCode + " -> " + arrCode + ", " + depDate.toString());
+
+            SearchResult result = searcher.searchOneWayTrip(depCode, arrCode, depDate);
+
+            if (result != null) {
+                
+                result.sortByCoachPrice();
+
+                flightSearchPanel.updateFlightResults(result.getCompleteFlightPlanList());
+                jScrollPane.setViewportView(flightSearchPanel);
+            } else {
+                System.out.println("Result was null!");
+            }
+        } else {
+            Date retDate = returnDateChooser.getDate();
+
+            if (retDate == null) {
+                return;
+            }
+
+            System.out.println("SEARCH : [Depart Flight] " + depCode + " -> " + arrCode + ", " + depDate.toString());
+            System.out.println("[Return Flight] " + arrCode + " -> " + depCode + ", " + retDate.toString());
+        }
+
+        //updateFlightSearchList();
     }//GEN-LAST:event_searchButtonActionPerformed
 
 
