@@ -10,12 +10,12 @@ package search;
  *
  * 
  */
-public class RoundTripFlightPlan extends FlightPlan {
+public class FlightPlanRoundTrip extends FlightPlan {
     
-    OneWayFlightPlan departingFlightPlan;
-    OneWayFlightPlan returningFlightPlan;
+    FlightPlanOneWay departingFlightPlan;
+    FlightPlanOneWay returningFlightPlan;
 
-    public RoundTripFlightPlan(OneWayFlightPlan departingPlan, OneWayFlightPlan returningPlan)
+    public FlightPlanRoundTrip(FlightPlanOneWay departingPlan, FlightPlanOneWay returningPlan)
     {
         departingFlightPlan = departingPlan;
         returningFlightPlan = returningPlan;
@@ -24,11 +24,11 @@ public class RoundTripFlightPlan extends FlightPlan {
         travelTime = departingPlan.getTravelTime() + returningPlan.getTravelTime();
     }
     
-    public OneWayFlightPlan getDepartingFlightPlan() {
+    public FlightPlanOneWay getDepartingFlightPlan() {
         return departingFlightPlan;
     }
     
-    public OneWayFlightPlan getReturningFlightPlan() {
+    public FlightPlanOneWay getReturningFlightPlan() {
         return returningFlightPlan;
     }
     

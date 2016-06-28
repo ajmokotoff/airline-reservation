@@ -14,7 +14,11 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.SpinnerDateModel;
+import search.ErrorResult;
+import search.Result;
 import search.SearchResult;
+import search.SearchResultOneWay;
+import search.SearchResultRoundTrip;
 import search.Searcher;
 
 /**
@@ -44,7 +48,7 @@ public class MainJFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainJFrame
      */
-    private Calendar calendar;
+    private final Calendar calendar;
     private final FlightSearchPanel flightSearchPanel;
 
     private TravelState currentTravelState;
@@ -330,38 +334,32 @@ public class MainJFrame extends javax.swing.JFrame {
         String depCode = textFieldDepartureLocation.getText();
         String arrCode = textFieldArrivalLocation.getText();
 
-        Date depDate = departureDateChooser.getDate();
+        Result result;
 
-        if (depDate == null) {
-            return;
+        // If one-way
+        if (currentTravelState.equals(TravelState.ONE_WAY)) {
+            result = searcher.searchOneWayTrip(depCode, arrCode, departureDateChooser.getDate());
+        } else { // Round trip
+            result = searcher.searchRoundTrip(depCode, arrCode, departureDateChooser.getDate(), returnDateChooser.getDate());
         }
 
-        if (currentTravelState.equals(TravelState.ONE_WAY)) {
-            System.out.println("SEARCH : [Depart Flight] " + depCode + " -> " + arrCode + ", " + depDate.toString());
+        if (result != null) {
 
-            SearchResult result = searcher.searchOneWayTrip(depCode, arrCode, depDate);
-
-            if (result != null) {
-                
-                result.sortByCoachPrice();
-
-                flightSearchPanel.updateFlightResults(result.getCompleteFlightPlanList());
-                jScrollPane.setViewportView(flightSearchPanel);
-            } else {
-                System.out.println("Result was null!");
+            if (result instanceof SearchResultOneWay) {
+                SearchResultOneWay oneWay = (SearchResultOneWay) result;
+                oneWay.sortByCoachPrice();
+                flightSearchPanel.updateFlightResults(oneWay.getFlightPlanList());
+            } else if (result instanceof SearchResultRoundTrip) {
+                SearchResultRoundTrip roundTrip = (SearchResultRoundTrip) result;
+                roundTrip.sortByCoachPrice();
+                flightSearchPanel.updateFlightResults(roundTrip.getFlightPlanList());
+            } else if (result instanceof ErrorResult) {
+                flightSearchPanel.displayText("Error: " + ((ErrorResult) result).getError());
             }
         } else {
-            Date retDate = returnDateChooser.getDate();
-
-            if (retDate == null) {
-                return;
-            }
-
-            System.out.println("SEARCH : [Depart Flight] " + depCode + " -> " + arrCode + ", " + depDate.toString());
-            System.out.println("[Return Flight] " + arrCode + " -> " + depCode + ", " + retDate.toString());
+            flightSearchPanel.displayText("Error: An unknown error has occurred!");
         }
-
-        //updateFlightSearchList();
+        jScrollPane.setViewportView(flightSearchPanel);
     }//GEN-LAST:event_searchButtonActionPerformed
 
 

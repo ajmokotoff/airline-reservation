@@ -83,7 +83,6 @@ public class SearchResultsPanel extends javax.swing.JPanel {
     
     // Currently does not use flightList, using dummy values
     public void updateFlightResults(List<FlightPlan> flightPlanList) {
-
         
         resultsPanel.removeAll();
 
@@ -92,20 +91,6 @@ public class SearchResultsPanel extends javax.swing.JPanel {
             resultsPanel.add(getWrappedPanel(new FlightPanel(flightPlan)));
         }
         
-        /*
-        resultsPanel.add(getWrappedPanel(new FlightPanel("01", 120.0, 1, "8:00AM")));
-        
-        if (!false) {
-            resultsPanel.add(getWrappedPanel(new FlightPanel("02", 120.0, 1, "8:00AM")));
-            resultsPanel.add(getWrappedPanel(new FlightPanel("03", 100.0, 0, "7:00AM")));
-            resultsPanel.add(getWrappedPanel(new FlightPanel("04", 120.0, 1, "8:00AM")));
-
-            resultsPanel.add(getWrappedPanel(new FlightPanel("01", 120.0, 1, "8:00AM")));
-            resultsPanel.add(getWrappedPanel(new FlightPanel("02", 120.0, 1, "8:00AM")));
-            resultsPanel.add(getWrappedPanel(new FlightPanel("03", 100.0, 0, "7:00AM")));
-            resultsPanel.add(getWrappedPanel(new FlightPanel("04", 120.0, 1, "8:00AM")));
-        }*/
-
     }
     
     private JPanel getWrappedPanel(FlightPanel flightPanel)

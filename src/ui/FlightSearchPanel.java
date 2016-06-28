@@ -58,6 +58,13 @@ public class FlightSearchPanel extends javax.swing.JPanel {
         
     }
 
+    public void displayText(String text)
+    {
+        textPane.setText(text);
+        removeAll();
+        add(textPane);
+    }
+    
     public void updateFlightResults(List<FlightPlan> flightPlanList) {
         removeAll();
         searchResultsPanel.updateFlightResults(flightPlanList);

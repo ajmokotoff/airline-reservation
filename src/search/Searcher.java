@@ -40,23 +40,28 @@ public class Searcher {
     }
 
     // Returning null if bad search result for now, should return error result to update gui output
-    public SearchResult searchOneWayTrip(String depCode, String arrCode, Date departDate) {
+    public Result searchOneWayTrip(String depCode, String arrCode, Date date) {
 
-        // Should split these up to return informed error result
-        if (!isValidAirportCode(depCode) || !isValidAirportCode(arrCode) || departDate == null) {
-            return null;
+        if (!isValidAirportCode(depCode)) {
+            return new ErrorResult("Invalid departure Airport Code!");
+        }
+
+        if (!isValidAirportCode(arrCode)) {
+            return new ErrorResult("Invalid arrival Airport Code!");
+        }
+
+        if (date == null) {
+            return new ErrorResult("Date is not set!");
         }
 
         flightMap.initialize();
 
         Calendar calendar = Calendar.getInstance();
 
-        calendar.setTime(departDate);
+        calendar.setTime(date);
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1; // For some reason, this returns 0 - 11
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        System.out.println("DATE: " + year + "/" + month + "/" + day);
 
         HashMap<String, Flight> departingFlightMap = dataFactory.xml2Flights(accessor.getDepartingFlights(depCode, year, month, day));
         HashMap<String, Flight> arrivingFlightMap = dataFactory.xml2Flights(accessor.getArrivingFlights(arrCode, year, month, day));
@@ -74,7 +79,7 @@ public class Searcher {
             flightMap.addFlightNo2FlightMap(dataFactory.xml2Flights(accessor.getDepartingFlights(currentArrCode, year, month, day)));
         }
 
-        Set<OneWayFlightPlan> flightPlanList = new HashSet();
+        Set<FlightPlanOneWay> flightPlanList = new HashSet();
         //List<FlightPlan> flightPlanList = new ArrayList();
 
         // Begin searching flight options
@@ -82,11 +87,9 @@ public class Searcher {
         if (flightMap.directFlightExists(depCode, arrCode)) {
 
             for (Flight directFlight : flightMap.getDirectFlights(depCode, arrCode)) {
-                flightPlanList.add(new OneWayFlightPlan(directFlight));
+                flightPlanList.add(new FlightPlanOneWay(directFlight));
             }
         }
-
-        System.out.println("SIZE: " + flightPlanList.size());
 
         // Iterate through airports that departure airport has flights to
         for (String currDepOutboundArrCode : depOutboundArrCodes) {
@@ -101,7 +104,7 @@ public class Searcher {
                     for (Flight connectingFlight : flightMap.getDirectFlights(currDepOutboundArrCode, arrCode)) {
 
                         if (validConnectingFlight(departingFlight, connectingFlight)) {
-                            flightPlanList.add(new OneWayFlightPlan(departingFlight, connectingFlight));
+                            flightPlanList.add(new FlightPlanOneWay(departingFlight, connectingFlight));
                         }
                     }
 
@@ -118,7 +121,7 @@ public class Searcher {
                                 for (Flight connectingFlight2 : flightMap.getDirectFlights(currArrInboundDepCode, arrCode)) {
 
                                     if (validConnectingFlight(departingFlight, connectingFlight1) && validConnectingFlight(connectingFlight1, connectingFlight2)) {
-                                        flightPlanList.add(new OneWayFlightPlan(departingFlight, connectingFlight1, connectingFlight2));
+                                        flightPlanList.add(new FlightPlanOneWay(departingFlight, connectingFlight1, connectingFlight2));
                                     }
                                 }
                             }
@@ -131,14 +134,24 @@ public class Searcher {
 
         }
 
-        return new SearchResult(flightPlanList);
+        return new SearchResultOneWay(flightPlanList);
     }
 
-    public SearchResult searchRoundTrip(String depCode, String arrCode, Date departDate, Date returnDate) {
-        SearchResult departResults = searchOneWayTrip(depCode, arrCode, departDate);
-        SearchResult returnResults = searchOneWayTrip(arrCode, depCode, returnDate);
+    public Result searchRoundTrip(String depCode, String arrCode, Date departDate, Date returnDate) {
+        Result departResults = searchOneWayTrip(depCode, arrCode, departDate);
 
-        return null;
+        if (departResults instanceof ErrorResult) {
+            return departResults;
+        }
+        
+        Result returnResults = searchOneWayTrip(arrCode, depCode, returnDate);
+
+        if(returnResults instanceof ErrorResult) {
+            return returnResults;
+        }
+        
+        //return null;
+        return new SearchResultRoundTrip((SearchResultOneWay)departResults, (SearchResultOneWay)returnResults);
     }
 
     private boolean isValidAirportCode(String str) {

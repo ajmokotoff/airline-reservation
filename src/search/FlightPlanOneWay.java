@@ -14,11 +14,11 @@ import java.util.Objects;
  *
  *
  */
-public class OneWayFlightPlan extends FlightPlan {
+public class FlightPlanOneWay extends FlightPlan {
 
-    private List<Flight> flightList;
+    private final List<Flight> flightList;
 
-    public OneWayFlightPlan(Flight... flights) {
+    public FlightPlanOneWay(Flight... flights) {
         super();
 
         flightList = Arrays.asList(flights);
@@ -40,11 +40,11 @@ public class OneWayFlightPlan extends FlightPlan {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof OneWayFlightPlan)) {
+        if (!(obj instanceof FlightPlanOneWay)) {
             return false;
         }
 
-        OneWayFlightPlan plan = (OneWayFlightPlan) obj;
+        FlightPlanOneWay plan = (FlightPlanOneWay) obj;
 
         if (flightList.size() != plan.getFlightList().size()) {
             return false;
@@ -56,8 +56,6 @@ public class OneWayFlightPlan extends FlightPlan {
             }
         }
         
-        
-
         return true;
 
     }
@@ -71,8 +69,7 @@ public class OneWayFlightPlan extends FlightPlan {
         {
             hash += Objects.hashCode(flight.getFlightNo());
         }
-        
-        //System.out.println("HERE!!!!");
+
         return hash;
     }
 

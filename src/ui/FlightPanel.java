@@ -9,7 +9,8 @@ import client.Flight;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import search.FlightPlan;
-import search.OneWayFlightPlan;
+import search.FlightPlanOneWay;
+import search.FlightPlanRoundTrip;
 
 /**
  *
@@ -19,44 +20,45 @@ public class FlightPanel extends javax.swing.JPanel {
 
     private static SimpleDateFormat dateFormat;
     
+    private FlightPlan flightPlan;
+
     /**
      * Creates new form FlightPanel
+     *
      * @param flightPlan
      */
-    public FlightPanel(FlightPlan flightPlan)
-    {
+    public FlightPanel(FlightPlan flightPlan) {
         // Need to have access to Flight parameters
-    
-        initComponents();
-    
-        dateFormat = new SimpleDateFormat("hh:mm a");
+
+        this.flightPlan = flightPlan;
         
-        if(flightPlan instanceof OneWayFlightPlan) {
-            OneWayFlightPlan oneWay = (OneWayFlightPlan)flightPlan;
+        initComponents();
+
+        dateFormat = new SimpleDateFormat("hh:mm a");
+
+        if (flightPlan instanceof FlightPlanOneWay) {
+            FlightPlanOneWay oneWay = (FlightPlanOneWay) flightPlan;
             Flight departureFlight = oneWay.getFlightList().get(0);
             updatePanel(departureFlight.getFlightNo(), oneWay.getCoachPrice(), oneWay.getNumberOfTransfers(), departureFlight.getDepTime());
-            
-            for(Flight flight : oneWay.getFlightList())
-            {
-                System.out.println(flight.getFlightNo());
-            }
-            System.out.println();
+        } else if (flightPlan instanceof FlightPlanRoundTrip) {
+            FlightPlanRoundTrip roundTrip = (FlightPlanRoundTrip) flightPlan;
+            Flight departureFlight = roundTrip.getDepartingFlightPlan().getFlightList().get(0);
+            updatePanel(departureFlight.getFlightNo(), roundTrip.getCoachPrice(), roundTrip.getDepartingFlightPlan().getNumberOfTransfers(), departureFlight.getDepTime());
         }
     }
-    
-    protected FlightPanel() {}
-    
+
+    protected FlightPanel() {
+    }
+
     protected final void updatePanel(String flightNumber, double price, int numTransfers, Date departTime) {
         flightNumberTextField.setText("#" + flightNumber);
         costTextField.setText("$" + String.format("%.2f", price));
         numTransfersTextField.setText(getNumTransfersString(numTransfers));
         departTimeTextField.setText(dateFormat.format(departTime));
     }
-    
-    private String getNumTransfersString(int numTransfers)
-    {
-        switch(numTransfers)
-        {
+
+    private String getNumTransfersString(int numTransfers) {
+        switch (numTransfers) {
             case 0:
                 return "Nonstop";
             case 1:
