@@ -49,13 +49,13 @@ public class FlightPlanOneWay extends FlightPlan {
         if (flightList.size() != plan.getFlightList().size()) {
             return false;
         }
-        
+
         for (int i = 0; i < flightList.size(); i++) {
             if (!flightList.get(i).getFlightNo().equals(plan.getFlightList().get(i).getFlightNo())) {
                 return false;
             }
         }
-        
+
         return true;
 
     }
@@ -64,13 +64,32 @@ public class FlightPlanOneWay extends FlightPlan {
     public int hashCode() {
         int hash = 3;
         hash = 67 * hash;
-        
-        for(Flight flight : flightList)
-        {
+
+        for (Flight flight : flightList) {
             hash += Objects.hashCode(flight.getFlightNo());
         }
 
         return hash;
+    }
+
+    @Override
+    public boolean canReserveCoach() {
+        for (Flight flight : flightList) {
+            if (flight.getCoach() <= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canReserveFirstClass() {
+        for (Flight flight : flightList) {
+            if (flight.getFirst() <= 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -55,8 +55,12 @@ public class MainJFrame extends javax.swing.JFrame {
     private SeatingClassState currentClassState;
 
     private final Searcher searcher;
+    private SearchResult latestSearchResult;
 
     public MainJFrame() {
+
+        currentTravelState = TravelState.ONE_WAY;
+        currentClassState = SeatingClassState.COACH;
 
         calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -91,10 +95,31 @@ public class MainJFrame extends javax.swing.JFrame {
         toggleButtonCoachSeating.setSelected(bool);
     }
 
-    public void updateFlightSearchList() {
-        flightSearchPanel.setVisible(true);
-        flightSearchPanel.updateFlightResults(null);
-        jScrollPane.setViewportView(flightSearchPanel);
+    private void displaySearchResult() {
+        if (latestSearchResult != null) {
+            if (currentClassState.equals(SeatingClassState.COACH)) {
+                latestSearchResult.sortByCoachPrice();
+
+            } else {
+                latestSearchResult.sortByFirstClassPrice();
+            }
+
+            flightSearchPanel.updateFlightResults(latestSearchResult);
+            flightSearchPanel.displayFlightResults();
+
+            if (currentClassState.equals(SeatingClassState.COACH)) {
+                flightSearchPanel.displayCoachPrices();
+            } else {
+                flightSearchPanel.displayFirstClassPrices();
+            }
+
+            jScrollPane.setViewportView(flightSearchPanel);
+        }
+    }
+    
+    private void displayError(String errorStr)
+    {
+        flightSearchPanel.displayText("Error: " + errorStr);
     }
 
     /**
@@ -312,6 +337,7 @@ public class MainJFrame extends javax.swing.JFrame {
 
     private void toggleButtonCoachSeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonCoachSeatingActionPerformed
         toggleCoach(true);
+        displaySearchResult();
     }//GEN-LAST:event_toggleButtonCoachSeatingActionPerformed
 
     private void toggleButtonRoundTripActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonRoundTripActionPerformed
@@ -320,6 +346,7 @@ public class MainJFrame extends javax.swing.JFrame {
 
     private void toggleButtonFirstClassSeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonFirstClassSeatingActionPerformed
         toggleCoach(false);
+        displaySearchResult();
     }//GEN-LAST:event_toggleButtonFirstClassSeatingActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -345,21 +372,15 @@ public class MainJFrame extends javax.swing.JFrame {
 
         if (result != null) {
 
-            if (result instanceof SearchResultOneWay) {
-                SearchResultOneWay oneWay = (SearchResultOneWay) result;
-                oneWay.sortByCoachPrice();
-                flightSearchPanel.updateFlightResults(oneWay.getFlightPlanList());
-            } else if (result instanceof SearchResultRoundTrip) {
-                SearchResultRoundTrip roundTrip = (SearchResultRoundTrip) result;
-                roundTrip.sortByCoachPrice();
-                flightSearchPanel.updateFlightResults(roundTrip.getFlightPlanList());
+            if (result instanceof SearchResult) {
+                latestSearchResult = (SearchResult) result;
+                displaySearchResult();
             } else if (result instanceof ErrorResult) {
-                flightSearchPanel.displayText("Error: " + ((ErrorResult) result).getError());
+                displayError(((ErrorResult)result).getError());
             }
         } else {
-            flightSearchPanel.displayText("Error: An unknown error has occurred!");
+            displayError("An unknown error has occurred!");
         }
-        jScrollPane.setViewportView(flightSearchPanel);
     }//GEN-LAST:event_searchButtonActionPerformed
 
 

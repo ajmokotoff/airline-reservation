@@ -31,5 +31,15 @@ public class FlightPlanRoundTrip extends FlightPlan {
     public FlightPlanOneWay getReturningFlightPlan() {
         return returningFlightPlan;
     }
+
+    @Override
+    public boolean canReserveCoach() {
+        return departingFlightPlan.canReserveCoach() && returningFlightPlan.canReserveCoach();
+    }
+
+    @Override
+    public boolean canReserveFirstClass() {
+        return departingFlightPlan.canReserveFirstClass() && returningFlightPlan.canReserveFirstClass();
+    }
     
 }

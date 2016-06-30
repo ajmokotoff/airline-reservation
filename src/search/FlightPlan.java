@@ -37,7 +37,11 @@ public abstract class FlightPlan {
     public long getTravelTime() {
         return travelTime;
     }
+    
+    abstract public boolean canReserveCoach();
 
+    abstract public boolean canReserveFirstClass();
+    
     static Comparator<FlightPlan> getCoachPriceComparator() {
         return new Comparator<FlightPlan>() {
 

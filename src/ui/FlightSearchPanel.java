@@ -5,21 +5,10 @@
  */
 package ui;
 
-import client.Flight;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.util.List;
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JTextPane;
-import search.FlightPlan;
+import search.SearchResult;
 
 /**
  *
@@ -64,10 +53,11 @@ public class FlightSearchPanel extends javax.swing.JPanel {
         removeAll();
         add(textPane);
     }
-    
-    public void updateFlightResults(List<FlightPlan> flightPlanList) {
+       
+    public void updateFlightResults(SearchResult result)
+    {
         removeAll();
-        searchResultsPanel.updateFlightResults(flightPlanList);
+        searchResultsPanel.updateFlightResults(result.getFlightPlanList());
         add(searchResultsPanel);
     }
     
@@ -76,6 +66,17 @@ public class FlightSearchPanel extends javax.swing.JPanel {
         removeAll();
         add(searchResultsPanel);
     }
+    
+    public void displayCoachPrices()
+    {
+        searchResultsPanel.displayCoachPrices();
+    }
+    
+    public void displayFirstClassPrices()
+    {
+        searchResultsPanel.displayFirstClassPrices();
+    }
+    
     
     public void displayExpandedFlight()
     {

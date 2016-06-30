@@ -5,8 +5,8 @@
  */
 package ui;
 
-import client.Flight;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -16,7 +16,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneLayout;
 import search.FlightPlan;
 
 /**
@@ -30,18 +29,18 @@ public class SearchResultsPanel extends javax.swing.JPanel {
     JMenuBar menuBar;
     JCheckBoxMenuItem priceMenuItem;
     JCheckBoxMenuItem timeMenuItem;
-    
+
     /**
      * Creates new form SearchResultsPanel
      */
     public SearchResultsPanel() {
         //initComponents();
-        
+
         setLayout(new BorderLayout());
-        
+
         menuBar = new JMenuBar();
         JMenu sortByMenu = new JMenu("Sort By");
-        
+
         priceMenuItem = new JCheckBoxMenuItem(new AbstractAction("Price") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -50,7 +49,7 @@ public class SearchResultsPanel extends javax.swing.JPanel {
             }
         });
         priceMenuItem.setSelected(true);
-        
+
         timeMenuItem = new JCheckBoxMenuItem(new AbstractAction("Time") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -61,53 +60,63 @@ public class SearchResultsPanel extends javax.swing.JPanel {
 
         sortByMenu.add(priceMenuItem);
         sortByMenu.add(timeMenuItem);
-        
-        
+
         menuBar.add(sortByMenu);
         this.add(menuBar, BorderLayout.NORTH);
-        
-        
+
         resultsPanel = new JPanel();
         resultsPanel.setLayout(new GridLayout(0, 1));
         resultsPanel.setVisible(true);
-        /*
-        scrollPane = new JScrollPane();
-        scrollPane.setLayout(new ScrollPaneLayout());
-        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-        scrollPane.setViewportView(resultsPanel);
-        this.add(scrollPane);
-        */
+
         this.add(resultsPanel);
     }
-    
-    
-    // Currently does not use flightList, using dummy values
+
     public void updateFlightResults(List<FlightPlan> flightPlanList) {
-        
+
         resultsPanel.removeAll();
 
-        for(FlightPlan flightPlan : flightPlanList)
-        {
+        for (FlightPlan flightPlan : flightPlanList) {
             resultsPanel.add(getWrappedPanel(new FlightPanel(flightPlan)));
         }
-        
+
     }
-    
-    private JPanel getWrappedPanel(FlightPanel flightPanel)
-    {
+
+    public void displayCoachPrices() {
+        for (Component resultComponent : resultsPanel.getComponents()) {
+            if (resultComponent instanceof JPanel) {
+                for (Component panelComponent : ((JPanel)resultComponent).getComponents()) {
+                    if (panelComponent instanceof FlightPanel) {
+                        ((FlightPanel) panelComponent).displayCoachPrice();
+                    }
+                }
+            }
+        }
+    }
+
+    public void displayFirstClassPrices() {
+        for (Component resultComponent : resultsPanel.getComponents()) {
+            if (resultComponent instanceof JPanel) {
+                for (Component panelComponent : ((JPanel)resultComponent).getComponents()) {
+                    if (panelComponent instanceof FlightPanel) {
+                        ((FlightPanel) panelComponent).displayFirstClassPrice();
+                    }
+                }
+            }
+        }
+    }
+
+    private JPanel getWrappedPanel(FlightPanel flightPanel) {
         JPanel wrappingPanel = new JPanel();
         wrappingPanel.setLayout(new BorderLayout());
-        wrappingPanel.add(flightPanel,BorderLayout.NORTH);
+        wrappingPanel.add(flightPanel, BorderLayout.NORTH);
         return wrappingPanel;
     }
-    
-    public boolean sortByPriceSelected()
-    {
+
+    public boolean sortByPriceSelected() {
         return priceMenuItem.isSelected();
     }
-    
-    public boolean sortByTimeSelected()
-    {
+
+    public boolean sortByTimeSelected() {
         return timeMenuItem.isSelected();
     }
 

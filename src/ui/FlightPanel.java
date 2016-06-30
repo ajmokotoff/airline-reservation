@@ -56,6 +56,16 @@ public class FlightPanel extends javax.swing.JPanel {
         numTransfersTextField.setText(getNumTransfersString(numTransfers));
         departTimeTextField.setText(dateFormat.format(departTime));
     }
+    
+    public void displayCoachPrice()
+    {
+        costTextField.setText("$" + String.format("%.2f", flightPlan.getCoachPrice()));
+    }
+    
+    public void displayFirstClassPrice()
+    {
+        costTextField.setText("$" + String.format("%.2f", flightPlan.getFirstClassPrice()));
+    }
 
     private String getNumTransfersString(int numTransfers) {
         switch (numTransfers) {
