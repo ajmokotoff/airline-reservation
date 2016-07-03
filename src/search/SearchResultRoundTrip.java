@@ -6,8 +6,12 @@
 package search;
 
 /**
+ * SearchResultRoundTrip class
+ * <p>
+ *     Contains Result info for a Round Trip search query.
+ * </p>
  *
- *
+ * @author Mike
  */
 public class SearchResultRoundTrip extends SearchResult {
 

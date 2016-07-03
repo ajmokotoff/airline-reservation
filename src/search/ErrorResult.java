@@ -7,8 +7,12 @@
 package search;
 
 /**
+ * ErrorResult class
+ * <p>
+ *     Only Result extension that isn't SearchResult, used to return error information.
+ * </p>
  *
- * 
+ * @author Mike
  */
 public class ErrorResult extends Result {
     
@@ -19,6 +23,8 @@ public class ErrorResult extends Result {
         errorStr = error;
     }
     
+    
+    // Return error string
     public String getError()
     {
         return errorStr;

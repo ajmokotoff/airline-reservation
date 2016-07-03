@@ -7,8 +7,12 @@
 package search;
 
 /**
+ * FlightPlanOneWay class
+ * <p>
+ *     Contains FlightPlan information for Round Trip trip.
+ * </p>
  *
- * 
+ * @author Mike
  */
 public class FlightPlanRoundTrip extends FlightPlan {
     
@@ -24,19 +28,23 @@ public class FlightPlanRoundTrip extends FlightPlan {
         travelTime = departingPlan.getTravelTime() + returningPlan.getTravelTime();
     }
     
+    // Return list of Flights for departing FlightPlan
     public FlightPlanOneWay getDepartingFlightPlan() {
         return departingFlightPlan;
     }
     
+    // Return list of Flights for returning FlightPlan
     public FlightPlanOneWay getReturningFlightPlan() {
         return returningFlightPlan;
     }
 
+    // Return if can reserve coach for all Flights
     @Override
     public boolean canReserveCoach() {
         return departingFlightPlan.canReserveCoach() && returningFlightPlan.canReserveCoach();
     }
 
+    // Return if can reserve first class for all Flights
     @Override
     public boolean canReserveFirstClass() {
         return departingFlightPlan.canReserveFirstClass() && returningFlightPlan.canReserveFirstClass();

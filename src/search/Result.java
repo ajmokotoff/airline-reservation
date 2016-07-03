@@ -7,8 +7,12 @@
 package search;
 
 /**
+ * Result class
+ * <p>
+ *     Abstract class used to define Results.
+ * </p>
  *
- * 
+ * @author Mike
  */
 public abstract class Result {
 

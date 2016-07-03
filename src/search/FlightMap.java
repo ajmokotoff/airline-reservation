@@ -12,8 +12,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * FlightMap class
+ * <p>
+ *     Contains HashMap mapping Departing Airport -> Arriving Airport -> Set of Flights.
+ * </p>
  *
- *
+ * @author Mike
  */
 public class FlightMap {
 
@@ -28,6 +32,7 @@ public class FlightMap {
         map.clear();
     }
     
+    // Add Flights from given map to HashMap
     public void addFlightNo2FlightMap(Map<String, Flight> fn2fMap)
     {
         String depCode;
@@ -47,11 +52,14 @@ public class FlightMap {
         }
     }
     
+    
+    // Returns if a direct flight exists between given airports
     public boolean directFlightExists(String depCode, String arrCode)
     {
         return map.containsKey(depCode) ? map.get(depCode).containsKey(arrCode) : false;
     }
     
+    // Returns set of direct flights from Departing Airport -> Arriving Airport
     public Set<Flight> getDirectFlights(String depCode, String arrCode)
     {
         return directFlightExists(depCode, arrCode) ? map.get(depCode).get(arrCode) : null;

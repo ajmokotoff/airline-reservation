@@ -9,8 +9,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * SearchResultOneWay class
+ * <p>
+ *     Contains Result info for a One Way search query.
+ * </p>
  *
- *
+ * @author Mike
  */
 public class SearchResultOneWay extends SearchResult {
 

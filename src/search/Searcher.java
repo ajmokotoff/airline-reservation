@@ -18,8 +18,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Searcher class
+ * <p>
+ *     Class contains DataFactory and Accessor, used to search for flight options
+ * </p>
  *
- *
+ * @author Mike
+ * 
  */
 public class Searcher {
 
@@ -39,7 +44,7 @@ public class Searcher {
         flightMap = new FlightMap();
     }
 
-    // Returning null if bad search result for now, should return error result to update gui output
+    // Performs flight search for given airport codes and date, returns Result
     public Result searchOneWayTrip(String depCode, String arrCode, Date date) {
 
         if (!isValidAirportCode(depCode)) {
@@ -103,7 +108,7 @@ public class Searcher {
                     // Iterate through flight set currDepOutputArrCode -> arrCode
                     for (Flight connectingFlight : flightMap.getDirectFlights(currDepOutboundArrCode, arrCode)) {
 
-                        if (validConnectingFlight(departingFlight, connectingFlight)) {
+                        if (validConnectingFlightTimeDiff(departingFlight, connectingFlight)) {
                             flightPlanList.add(new FlightPlanOneWay(departingFlight, connectingFlight));
                         }
                     }
@@ -120,7 +125,7 @@ public class Searcher {
                                 // Iterate through flight set currDepOutputArrCode -> arrCode
                                 for (Flight connectingFlight2 : flightMap.getDirectFlights(currArrInboundDepCode, arrCode)) {
 
-                                    if (validConnectingFlight(departingFlight, connectingFlight1) && validConnectingFlight(connectingFlight1, connectingFlight2)) {
+                                    if (validConnectingFlightTimeDiff(departingFlight, connectingFlight1) && validConnectingFlightTimeDiff(connectingFlight1, connectingFlight2)) {
                                         flightPlanList.add(new FlightPlanOneWay(departingFlight, connectingFlight1, connectingFlight2));
                                     }
                                 }
@@ -137,6 +142,10 @@ public class Searcher {
         return new SearchResultOneWay(flightPlanList);
     }
 
+    
+    // Performs round trip search for provided airport codes and dates.
+    // Does this by performing two one-way trip searches, passing valid Result of those searches
+    // to create the SearchResultRoundTrip (if either Result is bad, returns error).
     public Result searchRoundTrip(String depCode, String arrCode, Date departDate, Date returnDate) {
         Result departResults = searchOneWayTrip(depCode, arrCode, departDate);
 
@@ -149,15 +158,16 @@ public class Searcher {
         if(returnResults instanceof ErrorResult) {
             return returnResults;
         }
-        
-        //return null;
+
         return new SearchResultRoundTrip((SearchResultOneWay)departResults, (SearchResultOneWay)returnResults);
     }
 
+    // Check if String is an airport code
     private boolean isValidAirportCode(String str) {
         return airportCodesSet.contains(str.toUpperCase());
     }
 
+    // Given a HashMap of String -> Flight, return set of Arrival airport codes from all flights
     private Set<String> getArrCodesFromFlightMap(HashMap<String, Flight> map) {
         Set<String> codeSet = new HashSet();
 
@@ -168,6 +178,7 @@ public class Searcher {
         return codeSet;
     }
 
+    // Given a HashMap of String -> Flight, return set of Departure airport codes from all flights
     private Set<String> getDepCodesFromFlightMap(HashMap<String, Flight> map) {
         Set<String> codeSet = new HashSet();
 
@@ -178,7 +189,8 @@ public class Searcher {
         return codeSet;
     }
 
-    private boolean validConnectingFlight(Flight arrivingFlight, Flight departingFlight) {
+    // Given two flights, check if their time difference is valid for connecting flights
+    private boolean validConnectingFlightTimeDiff(Flight arrivingFlight, Flight departingFlight) {
         long diff = departingFlight.getDepTime().getTime() - arrivingFlight.getArrTime().getTime();
 
         long diffMinutes = diff / (60000) % 60;

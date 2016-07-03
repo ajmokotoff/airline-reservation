@@ -11,8 +11,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * FlightPlanOneWay class
+ * <p>
+ *     Contains FlightPlan information for One Way trip.
+ * </p>
  *
- *
+ * @author Mike
  */
 public class FlightPlanOneWay extends FlightPlan {
 
@@ -30,14 +34,17 @@ public class FlightPlanOneWay extends FlightPlan {
         }
     }
 
+    // Return list of Flights from this FlightPlan
     public List<Flight> getFlightList() {
         return flightList;
     }
 
+    // Return number of transfers in this FlightPlan
     public int getNumberOfTransfers() {
         return flightList.size() - 1;
     }
 
+    // Return true if all flight numbers are the same
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof FlightPlanOneWay)) {
@@ -60,6 +67,7 @@ public class FlightPlanOneWay extends FlightPlan {
 
     }
 
+    // Use flight numbers to calculate hash code
     @Override
     public int hashCode() {
         int hash = 3;
@@ -72,6 +80,7 @@ public class FlightPlanOneWay extends FlightPlan {
         return hash;
     }
 
+    // Return if can reserve coach for all Flights
     @Override
     public boolean canReserveCoach() {
         for (Flight flight : flightList) {
@@ -82,6 +91,7 @@ public class FlightPlanOneWay extends FlightPlan {
         return true;
     }
 
+    // Return if can reserve first class for all Flights
     @Override
     public boolean canReserveFirstClass() {
         for (Flight flight : flightList) {

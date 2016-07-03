@@ -5,23 +5,20 @@
  */
 package ui;
 
-import client.Flight;
-import java.awt.GridLayout;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.SpinnerDateModel;
 import search.ErrorResult;
 import search.Result;
 import search.SearchResult;
-import search.SearchResultOneWay;
-import search.SearchResultRoundTrip;
 import search.Searcher;
 
 /**
+ * MainJFrame class
+ * <p>
+ *     JFrame window that is provided to the user to interface with the reservation system.
+ * </p>
  *
  * @author Mike
  */
@@ -79,6 +76,7 @@ public class MainJFrame extends javax.swing.JFrame {
 
     }
 
+    // Toggles Travel State of Round Trip depending on bool input
     private void toggleRoundTrip(boolean bool) {
         currentTravelState = bool ? TravelState.ROUND_TRIP : TravelState.ONE_WAY;
         toggleButtonOneWay.setSelected(!bool);
@@ -89,12 +87,14 @@ public class MainJFrame extends javax.swing.JFrame {
         jTextField2.setVisible(bool);
     }
 
+    // Toggles Class State of Coach depending on bool input
     private void toggleCoach(boolean bool) {
         currentClassState = bool ? SeatingClassState.COACH : SeatingClassState.FIRST_CLASS;
         toggleButtonFirstClassSeating.setSelected(!bool);
         toggleButtonCoachSeating.setSelected(bool);
     }
 
+    // Displays search results in flightSearchPanel depending on current Travel State and Class State
     private void displaySearchResult() {
         if (latestSearchResult != null) {
             if (currentClassState.equals(SeatingClassState.COACH)) {
@@ -117,6 +117,8 @@ public class MainJFrame extends javax.swing.JFrame {
         }
     }
     
+    
+    // Display error text in flightSearchPanel
     private void displayError(String errorStr)
     {
         flightSearchPanel.displayText("Error: " + errorStr);
@@ -357,6 +359,7 @@ public class MainJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField2ActionPerformed
 
+    // On Search button press 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
         String depCode = textFieldDepartureLocation.getText();
         String arrCode = textFieldArrivalLocation.getText();
@@ -370,13 +373,21 @@ public class MainJFrame extends javax.swing.JFrame {
             result = searcher.searchRoundTrip(depCode, arrCode, departureDateChooser.getDate(), returnDateChooser.getDate());
         }
 
+        // If result is valid
         if (result != null) {
 
+            // If Search Result
             if (result instanceof SearchResult) {
+          
                 latestSearchResult = (SearchResult) result;
                 displaySearchResult();
-            } else if (result instanceof ErrorResult) {
+                
+            } 
+            // Else if error
+            else if (result instanceof ErrorResult) {
+                
                 displayError(((ErrorResult)result).getError());
+            
             }
         } else {
             displayError("An unknown error has occurred!");
