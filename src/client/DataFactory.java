@@ -7,7 +7,10 @@ import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
+import java.text.ParseException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Data factory for Airport, Airplane, Flight
@@ -105,24 +108,27 @@ public class DataFactory {
         NodeList nodes = doc.getElementsByTagName("Flight");
         HashMap<String, Flight> flights = new HashMap<>();
         for(int i=0;i<nodes.getLength();i++){
-            Element node= (Element) nodes.item(i);
-            String fno = node.getAttributeNode("Number").getValue();
-            Element departure = (Element)node.getElementsByTagName("Departure").item(0),
-                    arrival=(Element)node.getElementsByTagName("Arrival").item(0),
-                    seat=(Element)node.getElementsByTagName("Seating").item(0);
-            Flight ap = new Flight(fno,
-                    departure.getElementsByTagName("Code").item(0).getTextContent(),
-                    arrival.getElementsByTagName("Code").item(0).getTextContent(),
-                    departure.getElementsByTagName("Time").item(0).getTextContent(),
-                    arrival.getElementsByTagName("Time").item(0).getTextContent(),
-                    node.getAttributeNode("FlightTime").getValue(),
-                    node.getAttributeNode("Airplane").getValue(),
-                    seat.getElementsByTagName("FirstClass").item(0).getTextContent(),
-                    seat.getElementsByTagName("Coach").item(0).getTextContent(),
-                    ((Element)seat.getElementsByTagName("FirstClass").item(0)).getAttributeNode("Price").getValue(),
-                    ((Element)seat.getElementsByTagName("Coach").item(0)).getAttributeNode("Price").getValue()
-            );
-            flights.put(fno,ap);
+            try {
+                Element node= (Element) nodes.item(i);
+                String fno = node.getAttributeNode("Number").getValue();
+                Element departure = (Element)node.getElementsByTagName("Departure").item(0),
+                        arrival=(Element)node.getElementsByTagName("Arrival").item(0),
+                        seat=(Element)node.getElementsByTagName("Seating").item(0);
+                Flight ap = new Flight(fno,
+                        departure.getElementsByTagName("Code").item(0).getTextContent(),
+                        arrival.getElementsByTagName("Code").item(0).getTextContent(),
+                        departure.getElementsByTagName("Time").item(0).getTextContent(),
+                        arrival.getElementsByTagName("Time").item(0).getTextContent(),
+                        node.getAttributeNode("FlightTime").getValue(),
+                        node.getAttributeNode("Airplane").getValue(),
+                        seat.getElementsByTagName("FirstClass").item(0).getTextContent(),
+                        seat.getElementsByTagName("Coach").item(0).getTextContent(),
+                        ((Element)seat.getElementsByTagName("FirstClass").item(0)).getAttributeNode("Price").getValue(),
+                        ((Element)seat.getElementsByTagName("Coach").item(0)).getAttributeNode("Price").getValue()
+                );  flights.put(fno,ap);
+            } catch (ParseException ex) {
+                Logger.getLogger(DataFactory.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return flights;
     }
