@@ -6,14 +6,17 @@
 package search;
 
 import client.Flight;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * FlightPlanOneWay class
  * <p>
- *     Contains FlightPlan information for One Way trip.
+ * Contains FlightPlan information for One Way trip.
  * </p>
  *
  * @author Mike
@@ -21,6 +24,7 @@ import java.util.Objects;
 public class FlightPlanOneWay extends FlightPlan {
 
     private final List<Flight> flightList;
+    private final Map<Flight, Boolean> flightSeatingIsCoachMap;
 
     public FlightPlanOneWay(Flight... flights) {
         super();
@@ -28,10 +32,16 @@ public class FlightPlanOneWay extends FlightPlan {
         flightList = Arrays.asList(flights);
         travelTime = flights[flights.length - 1].getArrTime().getTime() - flights[0].getDepTime().getTime();
 
+        flightSeatingIsCoachMap = new HashMap();
+
         for (Flight flight : flights) {
             coachPrice += flight.getCoachPrice();
             firstClassPrice += flight.getFirstPrice();
+
+            // Initialize all flight seatings to coach pricing
+            flightSeatingIsCoachMap.put(flight, Boolean.TRUE);
         }
+
     }
 
     // Return list of Flights from this FlightPlan
@@ -42,6 +52,31 @@ public class FlightPlanOneWay extends FlightPlan {
     // Return number of transfers in this FlightPlan
     public int getNumberOfTransfers() {
         return flightList.size() - 1;
+    }
+    
+    public void setFlightSeatingToCoach(Flight flight)
+    {
+        flightSeatingIsCoachMap.put(flight, Boolean.TRUE);
+    }
+    
+    public void setFlightSeatingToFirstClass(Flight flight)
+    {
+        flightSeatingIsCoachMap.put(flight, Boolean.FALSE);
+    }
+    
+    public boolean flightSeatingIsCoach(Flight flight)
+    {
+        return flightSeatingIsCoachMap.get(flight);
+    }
+
+    @Override
+    public double getPrice() {
+        double cost = 0;
+
+        for (Flight flight : flightList) {
+            cost += flightSeatingIsCoachMap.get(flight) ? flight.getCoachPrice() : flight.getFirstPrice();
+        }
+        return cost;
     }
 
     // Return true if all flight numbers are the same
@@ -84,7 +119,7 @@ public class FlightPlanOneWay extends FlightPlan {
     @Override
     public boolean canReserveCoach() {
         for (Flight flight : flightList) {
-            if (flight.getCoach() <= 0) {
+            if (flight.checkCoachLeft() <= 0) {
                 return false;
             }
         }
@@ -95,7 +130,7 @@ public class FlightPlanOneWay extends FlightPlan {
     @Override
     public boolean canReserveFirstClass() {
         for (Flight flight : flightList) {
-            if (flight.getFirst() <= 0) {
+            if (flight.checkFirstLeft() <= 0) {
                 return false;
             }
         }
