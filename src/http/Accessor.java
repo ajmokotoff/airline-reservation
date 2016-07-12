@@ -19,6 +19,10 @@ public class Accessor{
      * singleton instance
      */
     private static Accessor _instance=null;
+    /**
+     * times of accessing, tracked for test
+     */
+    private int times;
     private QueryFactory queryFactory;
     /**
      * server url
@@ -27,6 +31,7 @@ public class Accessor{
 
     private Accessor(){
         queryFactory=new QueryFactory();
+        times = 0;
     }
     public static Accessor get_instance(){
         if (_instance==null) _instance=new Accessor();
@@ -50,6 +55,7 @@ public class Accessor{
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             int code = con.getResponseCode();
+            times++;
             if (code>=200 && code <300) {
                 BufferedInputStream bis = new BufferedInputStream(con.getInputStream());
                 int result = bis.read();
@@ -92,6 +98,7 @@ public class Accessor{
             writer.close();
 
             int responseCode = connection.getResponseCode();
+            times++;
 
             System.out.println(("Response Code : " + responseCode));
 
@@ -198,6 +205,7 @@ public class Accessor{
             writer.close();
 
             int responseCode = connection.getResponseCode();
+            times++;
             System.out.println("\nSending 'POST' to ReserveFlights");
             System.out.println(("Response Code : " + responseCode));
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -218,6 +226,8 @@ public class Accessor{
             return false;
         }
     }
+
+    public int getTimes(){return times;}
 }
 
 /**
