@@ -103,7 +103,9 @@ public class Flight {
      */
     public String toString(){
         // won't print all the attributes
-        return "< "+flightNo+", "+depCode+"->"+arrCode+", Model:"+model+", seat reserved (first/coach):"+first+"/"+coach+" >";
+        return "["+flightNo+","+depCode+"=>"+arrCode+",Model:"+model+",seat reserved(first|coach):"
+                +first+"/"+((Airplane)Airplanes.get().get(model)).getFirst()+"|"
+                +coach+"/"+((Airplane)Airplanes.get().get(model)).getCoach()+"]";
     }
 
 

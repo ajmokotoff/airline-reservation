@@ -5,6 +5,9 @@ import client.Flight;
 import http.Accessor;
 import search.FlightPlan;
 import search.FlightPlanOneWay;
+import search.FlightPlanRoundTrip;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Reserver {
@@ -14,49 +17,59 @@ public class Reserver {
         accessor = Accessor.get_instance();
     }
 
-    private boolean reserveOneFlight(String flightNo, boolean isCoach){
-        if(!accessor.reserveSeat(flightNo,isCoach)){
-            System.out.println(flightNo+":seat number change failed");
-            return false;
-        }
-        return true;
+    private boolean checkAvailable(FlightPlan plan,boolean isOneway){
+        if(isOneway) return checkOneWayAvailable((FlightPlanOneWay) plan);
+        return checkRoundTripAvailable((FlightPlanRoundTrip) plan);
     }
-
-    public boolean reserveOneFlight(Flight flight, boolean isCoach){
-        if (!accessor.lockDB()){
-            System.out.println("lock failed");
-            return false;
-        }
-        if (!reserveOneFlight(flight.getFlightNo(),isCoach)){
-            System.out.println("reserve failed");
-            return false;
-        }
-        if(!accessor.unlockDB()){
-            System.out.println("reserving success but failed to unlock DB");
-            return true;
-        }
-        return true;
-    }
-
-    public boolean reservePlan(FlightPlan flightplan, boolean isOneWay){
-        return false;
-        // unfinished, no specific seat time for each flight in flightplan
-        // roundTrip haven't start
-        /*
-        boolean result;
-        if(isOneWay){
-            FlightPlanOneWay plan = (FlightPlanOneWay) flightplan;
-            for (Flight f: plan.getFlightList()) {
-                if (!reserveOneFlight(f, true)){
-                    //always coach
-                }
-            }
-        }
-        else{
-
+    private boolean checkOneWayAvailable(FlightPlanOneWay plan){
+        boolean result = true;
+        for(Flight f:plan.getFlightList()){
+            if(plan.flightSeatingIsCoach(f)) result&=(f.checkCoachLeft()>0);
+            else result&=(f.checkFirstLeft()>0);
         }
         return result;
-        */
+    }
+    private boolean checkRoundTripAvailable(FlightPlanRoundTrip plan){
+        return checkOneWayAvailable(plan.getDepartingFlightPlan())
+                &&checkOneWayAvailable(plan.getReturningFlightPlan());
+    }
+
+    private boolean reserveOneFlight(Flight flight, boolean isCoach){
+        return accessor.reserveSeat(flight.getFlightNo(),isCoach);
+    }
+
+    public ReserveResult reservePlan(FlightPlan flightplan, boolean isOneWay){
+        HashMap<Flight, Boolean> result=new HashMap<>();
+        boolean all=true;
+
+        if(!accessor.lockDB()) return new ReserveResult(result,false,false,false);
+
+        if(!checkAvailable(flightplan,isOneWay)) return new ReserveResult(result,true,false,false);
+        if(isOneWay){
+            FlightPlanOneWay plan = (FlightPlanOneWay) flightplan;
+            for (Flight f : plan.getFlightList()) {
+                boolean succeed = reserveOneFlight(f,plan.flightSeatingIsCoach(f));
+                result.put(f, succeed);
+                all&=succeed;
+            }
+        }else{
+            FlightPlanRoundTrip plan = (FlightPlanRoundTrip) flightplan;
+            FlightPlanOneWay dep=plan.getDepartingFlightPlan(),ret=plan.getReturningFlightPlan();
+            for(Flight f:dep.getFlightList()){
+                boolean succeed = reserveOneFlight(f,dep.flightSeatingIsCoach(f));
+                result.put(f, succeed);
+                all&=succeed;
+            }
+            for(Flight f:ret.getFlightList()){
+                boolean succeed = reserveOneFlight(f,ret.flightSeatingIsCoach(f));
+                result.put(f, succeed);
+                all&=succeed;
+            }
+        }
+
+        if(!accessor.unlockDB()) return new ReserveResult(result,true,all,false);
+
+        return new ReserveResult(result,true,all,true);
     }
 
 }
