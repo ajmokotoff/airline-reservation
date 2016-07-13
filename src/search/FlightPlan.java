@@ -43,6 +43,9 @@ public abstract class FlightPlan {
         return travelTime;
     }
     
+    // Get current price for all Flights based on current seating preferences
+    abstract public double getPrice();
+    
     // Return if can reserve coach for all Flights
     abstract public boolean canReserveCoach();
 
