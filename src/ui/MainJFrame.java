@@ -7,9 +7,8 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Calendar;
+import java.util.Date;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -172,9 +171,8 @@ public class MainJFrame extends javax.swing.JFrame {
             jScrollPane.setViewportView(flightSearchPanel);
         }
     }
-    
-    public static void displayExpandedFlightPlan(FlightPlan flightPlan)
-    {
+
+    public static void displayExpandedFlightPlan(FlightPlan flightPlan) {
         if (currentClassState.equals(SeatingClassState.COACH)) {
             flightPlan.setAllCoachSeating();
         } else {
@@ -255,6 +253,8 @@ public class MainJFrame extends javax.swing.JFrame {
         textFieldArrivalLocation.setMinimumSize(new java.awt.Dimension(170, 20));
         textFieldArrivalLocation.setPreferredSize(new java.awt.Dimension(170, 20));
 
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
         timeDepartStart.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeDepartStart.setEditor(new JSpinner.DateEditor(timeDepartStart, "hh:mm a"));
         timeDepartStart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -269,6 +269,8 @@ public class MainJFrame extends javax.swing.JFrame {
             }
         });
 
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
         timeDepartEnd.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeDepartEnd.setEditor(new JSpinner.DateEditor(timeDepartEnd, "hh:mm a"));
         timeDepartEnd.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -276,6 +278,8 @@ public class MainJFrame extends javax.swing.JFrame {
 
         jPanel1.setVisible(true);
 
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
         timeReturnStart.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeReturnStart.setEditor(new JSpinner.DateEditor(timeReturnStart, "hh:mm a"));
         timeReturnStart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -290,6 +294,8 @@ public class MainJFrame extends javax.swing.JFrame {
             }
         });
 
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
         timeReturnEnd.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeReturnEnd.setEditor(new JSpinner.DateEditor(timeReturnEnd, "hh:mm a"));
         timeReturnEnd.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -441,6 +447,30 @@ public class MainJFrame extends javax.swing.JFrame {
 
     // On Search button press 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+
+        if(departureDateChooser.getDate() == null)
+        {
+            displayError("Date is not set!");
+            return;
+        }
+
+        calendar.setTime(departureDateChooser.getDate());
+        calendar.set(Calendar.SECOND, 0);
+
+        Calendar tempCal = Calendar.getInstance();
+
+        tempCal.setTime((Date) timeDepartStart.getModel().getValue());
+        calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
+
+        Date dateDepartStart = calendar.getTime();
+
+        tempCal.setTime((Date) timeDepartEnd.getModel().getValue());
+        calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
+
+        Date dateDepartEnd = calendar.getTime();
+
         String depCode = textFieldDepartureLocation.getText();
         String arrCode = textFieldArrivalLocation.getText();
 
@@ -448,9 +478,25 @@ public class MainJFrame extends javax.swing.JFrame {
 
         // If one-way
         if (currentTravelState.equals(TravelState.ONE_WAY)) {
-            result = searcher.searchOneWayTrip(depCode, arrCode, departureDateChooser.getDate());
+            result = searcher.searchOneWayTrip(depCode, arrCode, dateDepartStart, dateDepartEnd);
         } else { // Round trip
-            result = searcher.searchRoundTrip(depCode, arrCode, departureDateChooser.getDate(), returnDateChooser.getDate());
+
+            calendar.setTime(returnDateChooser.getDate());
+            calendar.set(Calendar.SECOND, 0);
+
+            tempCal.setTime((Date) timeReturnStart.getModel().getValue());
+            calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
+
+            Date dateReturnStart = calendar.getTime();
+
+            tempCal.setTime((Date) timeReturnEnd.getModel().getValue());
+            calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
+
+            Date dateReturnEnd = calendar.getTime();
+
+            result = searcher.searchRoundTrip(depCode, arrCode, dateDepartStart, dateDepartEnd, dateReturnStart, dateReturnEnd);
         }
 
         // If result is valid
