@@ -33,7 +33,7 @@ public class ReserverTest {
         System.out.println("\nAll set:"+result1.isAllSet());
         System.out.println(result1);
 
-        //minute
+        //mute
         accessor.setVerbose(false);
 
         // fail because of flight a doesn't have enough first seat
@@ -56,5 +56,11 @@ public class ReserverTest {
         ReserveResult result4 = reserver.reservePlan(plan4,false);
         System.out.println("\nAll set:"+result4.isAllSet());
         System.out.println(result4);
+
+        // check reserve one flight function
+        Flight flight1 = plan1.getFlightList().get(0);
+        ReserveResult result5 =  reserver.reserveFlight(flight1,false);
+        System.out.println("\nAll set:"+result5.isAllSet());
+        System.out.println(result5);
     }
 }

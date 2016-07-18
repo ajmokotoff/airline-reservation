@@ -80,6 +80,42 @@ public class Reserver {
     }
 
     /**
+     * Reserve only one flight with locking and unlocking action.
+     * @param flight flight needs to be reserved
+     * @param isCoach saet class is coach or not
+     * @return reserve result class
+     */
+    public ReserveResult reserveFlight(Flight flight, boolean isCoach){
+        HashMap<Flight, Boolean> result=new HashMap<>();
+        boolean isSucceed=true;
+
+        // lock db first
+        if(!accessor.lockDB()) {
+            System.out.println("Failed to lock");
+            return new ReserveResult(result,false,false,false,false);
+        }
+
+        // make sure all seats are available
+        if(isCoach&&flight.checkCoachLeft()<1 || !isCoach&&flight.checkFirstLeft()<1){
+            System.out.println("seat not available");
+            return new ReserveResult(result,true,false,false,accessor.unlockDB());
+        }
+
+        // reserve all flights according to plan type, one way or round trip
+        isSucceed = reserveOneFlight(flight,isCoach);
+        result.put(flight,isSucceed);
+
+        // finished, and unlock. If here failed, server need some time to unlock by itself
+        // and no reserving can be done during this period.
+        if(!accessor.unlockDB()){
+            System.out.println("Failed to unlock");
+            return new ReserveResult(result,true,true,isSucceed,false);
+        }
+
+        return new ReserveResult(result,true,true,isSucceed,true);
+    }
+
+    /**
      * reserve all the seats given a flight plan. plan can be one way or round trip.
      * @param flightplan flight plan the user selected
      * @param isOneWay indicating it is an one way or round trip.
