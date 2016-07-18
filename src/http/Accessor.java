@@ -19,6 +19,11 @@ public class Accessor{
      * singleton instance
      */
     private static Accessor _instance=null;
+    private boolean verbose;
+    /**
+     * times of accessing, tracked for test
+     */
+    private int times;
     private QueryFactory queryFactory;
     /**
      * server url
@@ -27,7 +32,13 @@ public class Accessor{
 
     private Accessor(){
         queryFactory=new QueryFactory();
+        times = 0;
+        verbose=true;
     }
+    public void setVerbose(boolean verbose){
+        this.verbose=verbose;
+    }
+
     public static Accessor get_instance(){
         if (_instance==null) _instance=new Accessor();
         return _instance;
@@ -50,6 +61,7 @@ public class Accessor{
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             int code = con.getResponseCode();
+            times++;
             if (code>=200 && code <300) {
                 BufferedInputStream bis = new BufferedInputStream(con.getInputStream());
                 int result = bis.read();
@@ -92,8 +104,9 @@ public class Accessor{
             writer.close();
 
             int responseCode = connection.getResponseCode();
+            times++;
 
-            System.out.println(("Response Code : " + responseCode));
+            if (verbose) System.out.println(("Response Code : " + responseCode));
 
             if ((responseCode >= 200) && (responseCode <= 299)) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -104,7 +117,7 @@ public class Accessor{
                     response.append(line);
                 }
                 in.close();
-                System.out.println("Response content: "+response.toString());
+                if (verbose) System.out.println("Response content: "+response.toString());
             }
         }
         catch (IOException ex) {
@@ -162,7 +175,7 @@ public class Accessor{
      * @return if the lock operation succeeds.
      */
     public boolean lockDB (){
-        System.out.println("\nSending 'POST' to lock database");
+        if (verbose) System.out.println("\nSending 'POST' to lock database");
         return httpPost(queryFactory.getLock());
     }
 
@@ -171,7 +184,7 @@ public class Accessor{
      * @return if the unlock operation succeeds.
      */
     public boolean unlockDB(){
-        System.out.println("\nSending 'POST' to unlock database");
+        if (verbose) System.out.println("\nSending 'POST' to unlock database");
         return httpPost(queryFactory.getUnlock());
     }
 
@@ -198,8 +211,11 @@ public class Accessor{
             writer.close();
 
             int responseCode = connection.getResponseCode();
-            System.out.println("\nSending 'POST' to ReserveFlights");
-            System.out.println(("Response Code : " + responseCode));
+            times++;
+            if (verbose) {
+                System.out.println("\nSending 'POST' to ReserveFlights");
+                System.out.println(("Response Code : " + responseCode));
+            }
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
             StringBuilder response = new StringBuilder();
@@ -208,7 +224,7 @@ public class Accessor{
                 response.append(line);
             }
             in.close();
-            System.out.println("Response content: "+response.toString());
+            if (verbose) System.out.println("Response content: "+response.toString());
             return (responseCode >= 200) && (responseCode <= 299);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -218,6 +234,8 @@ public class Accessor{
             return false;
         }
     }
+
+    public int getTimes(){return times;}
 }
 
 /**
@@ -274,7 +292,7 @@ class QueryFactory{
     String getReserving(String flightNumber, boolean isCoach){
         String reservingSuffix = "&action=buyTickets";
         return team+ reservingSuffix +"&flightData="+"<Flights>"
-                + "<Flight number=\"" + flightNumber + "\" seating=\""+(isCoach?"Coach":"First")+"\"/>"
+                + "<Flight number=\"" + flightNumber + "\" seating=\""+(isCoach?"Coach":"FirstClass")+"\"/>"
                 + "</Flights>";
     }
 }

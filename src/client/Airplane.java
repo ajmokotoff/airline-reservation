@@ -53,4 +53,7 @@ public class Airplane {
     public String toString(){
         return "< "+model+", "+manf+", seat(first/coach):"+first+"/"+coach+" >";
     }
+
+    public int getFirst(){return first;}
+    public int getCoach(){return coach;}
 }

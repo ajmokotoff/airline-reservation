@@ -6,6 +6,8 @@
 package ui;
 
 import client.Flight;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import search.FlightPlan;
@@ -19,19 +21,20 @@ import search.FlightPlanRoundTrip;
 public class FlightPanel extends javax.swing.JPanel {
 
     private static SimpleDateFormat dateFormat;
-    
+
     private FlightPlan flightPlan;
 
     /**
      * Creates new form FlightPanel
      *
      * @param flightPlan
+     * @param mouseAdapter
      */
-    public FlightPanel(FlightPlan flightPlan) {
+    public FlightPanel(FlightPlan flightPlan, MouseAdapter mouseAdapter) {
         // Need to have access to Flight parameters
 
         this.flightPlan = flightPlan;
-        
+
         initComponents();
 
         dateFormat = new SimpleDateFormat("hh:mm a");
@@ -45,6 +48,14 @@ public class FlightPanel extends javax.swing.JPanel {
             Flight departureFlight = roundTrip.getDepartingFlightPlan().getFlightList().get(0);
             updatePanel(departureFlight.getFlightNo(), roundTrip.getCoachPrice(), roundTrip.getDepartingFlightPlan().getNumberOfTransfers(), departureFlight.getDepTime());
         }
+
+        //FlightPanelMouseAdapter mouseAdapter = new FlightPanelMouseAdapter();
+        
+        this.addMouseListener(mouseAdapter);
+        flightNumberTextField.addMouseListener(mouseAdapter);
+        costTextField.addMouseListener(mouseAdapter);
+        numTransfersTextField.addMouseListener(mouseAdapter);
+        departTimeTextField.addMouseListener(mouseAdapter);
     }
 
     protected FlightPanel() {
@@ -56,15 +67,18 @@ public class FlightPanel extends javax.swing.JPanel {
         numTransfersTextField.setText(getNumTransfersString(numTransfers));
         departTimeTextField.setText(dateFormat.format(departTime));
     }
-    
-    public void displayCoachPrice()
-    {
+
+    public void displayCoachPrice() {
         costTextField.setText("$" + String.format("%.2f", flightPlan.getCoachPrice()));
     }
-    
-    public void displayFirstClassPrice()
-    {
+
+    public void displayFirstClassPrice() {
         costTextField.setText("$" + String.format("%.2f", flightPlan.getFirstClassPrice()));
+    }
+    
+    public FlightPlan getFlightPlan()
+    {
+        return flightPlan;
     }
 
     private String getNumTransfersString(int numTransfers) {

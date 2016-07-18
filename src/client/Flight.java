@@ -4,8 +4,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Flight class
@@ -105,9 +103,30 @@ public class Flight {
      */
     public String toString(){
         // won't print all the attributes
-        return "< "+flightNo+", "+depCode+"->"+arrCode+", Model:"+model+", seat reserved (first/coach):"+first+"/"+coach+" >";
+        return "["+flightNo+","+depCode+"=>"+arrCode+",Model:"+model+",seat reserved(first|coach):"
+                +first+"/"+((Airplane)Airplanes.get().get(model)).getFirst()+"|"
+                +coach+"/"+((Airplane)Airplanes.get().get(model)).getCoach()+"]";
     }
-    
+
+
+    /**
+     * check how many coach seats left
+     * @return left number of seat
+     */
+    public int checkCoachLeft(){
+        int total = ((Airplane)Airplanes.get().get(model)).getCoach();
+        return total-coach;
+    }
+
+    /**
+     * check how many first class seat left
+     * @return left number of seat
+     */
+    public int checkFirstLeft(){
+        int total = ((Airplane)Airplanes.get().get(model)).getFirst();
+        return total-first;
+    }
+
     public String getFlightNo()
     {
         return flightNo;

@@ -7,7 +7,10 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import javax.swing.JPanel;
 import javax.swing.JTextPane;
+import search.FlightPlan;
 import search.SearchResult;
 
 /**
@@ -20,7 +23,7 @@ public class FlightSearchPanel extends javax.swing.JPanel {
     JTextPane textPane;
     SearchResultsPanel searchResultsPanel;
     ExpandedFlightPanel expandedFlightPanel;
-    
+
     /**
      * Creates new form FlightSearchPanel
      */
@@ -78,9 +81,14 @@ public class FlightSearchPanel extends javax.swing.JPanel {
     }
     
     
-    public void displayExpandedFlight()
+    public void displayExpandedFlight(FlightPlan flightPlan)
     {
         removeAll();
+        expandedFlightPanel.updateFlightPlan(flightPlan);
+        //JPanel wrapper = new JPanel();
+        //wrapper.setLayout(new BorderLayout());
+        //wrapper.add(expandedFlightPanel);
+        //add(wrapper);
         add(expandedFlightPanel);
     }
 

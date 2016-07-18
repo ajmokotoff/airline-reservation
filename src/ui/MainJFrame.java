@@ -5,11 +5,19 @@
  */
 package ui;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
 import java.util.Calendar;
+import java.util.Date;
+import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.SpinnerDateModel;
 import search.ErrorResult;
+import search.FlightPlan;
 import search.Result;
 import search.SearchResult;
 import search.Searcher;
@@ -17,7 +25,7 @@ import search.Searcher;
 /**
  * MainJFrame class
  * <p>
- *     JFrame window that is provided to the user to interface with the reservation system.
+ * JFrame window that is provided to the user to interface with the reservation system.
  * </p>
  *
  * @author Mike
@@ -46,18 +54,24 @@ public class MainJFrame extends javax.swing.JFrame {
      * Creates new form MainJFrame
      */
     private final Calendar calendar;
-    private final FlightSearchPanel flightSearchPanel;
+    private static FlightSearchPanel flightSearchPanel;
 
-    private TravelState currentTravelState;
-    private SeatingClassState currentClassState;
+    private static TravelState currentTravelState;
+    private static SeatingClassState currentClassState;
+    private static SortByState currentSortByState;
 
     private final Searcher searcher;
-    private SearchResult latestSearchResult;
+    private static SearchResult latestSearchResult;
+
+    JMenuBar menuBar;
+    JCheckBoxMenuItem priceMenuItem;
+    JCheckBoxMenuItem timeMenuItem;
 
     public MainJFrame() {
 
         currentTravelState = TravelState.ONE_WAY;
         currentClassState = SeatingClassState.COACH;
+        currentSortByState = SortByState.PRICE;
 
         calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -73,6 +87,38 @@ public class MainJFrame extends javax.swing.JFrame {
         searcher = new Searcher();
 
         toggleRoundTrip(false);
+
+        JMenuBar menuBar = new JMenuBar();
+        JMenu sortByMenu = new JMenu("Sort By");
+
+        priceMenuItem = new JCheckBoxMenuItem(new AbstractAction("Price") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                priceMenuItem.setSelected(true);
+                timeMenuItem.setSelected(false);
+                currentSortByState = SortByState.PRICE;
+                displaySearchResult();
+            }
+        });
+        priceMenuItem.setSelected(true);
+
+        timeMenuItem = new JCheckBoxMenuItem(new AbstractAction("Time") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                priceMenuItem.setSelected(false);
+                timeMenuItem.setSelected(true);
+                currentSortByState = SortByState.TIME;
+                displaySearchResult();
+            }
+        });
+
+        sortByMenu.add(priceMenuItem);
+        sortByMenu.add(timeMenuItem);
+
+        menuBar.add(sortByMenu);
+
+        jMenuBarPanel.setLayout(new BorderLayout());
+        jMenuBarPanel.add(menuBar, BorderLayout.NORTH);
 
     }
 
@@ -95,13 +141,22 @@ public class MainJFrame extends javax.swing.JFrame {
     }
 
     // Displays search results in flightSearchPanel depending on current Travel State and Class State
-    private void displaySearchResult() {
+    public static void displaySearchResult() {
         if (latestSearchResult != null) {
-            if (currentClassState.equals(SeatingClassState.COACH)) {
-                latestSearchResult.sortByCoachPrice();
 
+            if (currentSortByState.equals(SortByState.PRICE)) {
+                if (currentClassState.equals(SeatingClassState.COACH)) {
+                    latestSearchResult.sortByCoachPrice();
+
+                } else {
+                    latestSearchResult.sortByFirstClassPrice();
+                }
             } else {
-                latestSearchResult.sortByFirstClassPrice();
+                if (currentClassState.equals(SeatingClassState.COACH)) {
+                    latestSearchResult.sortByCoachTime();
+                } else {
+                    latestSearchResult.sortByFirstClassTime();
+                }
             }
 
             flightSearchPanel.updateFlightResults(latestSearchResult);
@@ -116,11 +171,19 @@ public class MainJFrame extends javax.swing.JFrame {
             jScrollPane.setViewportView(flightSearchPanel);
         }
     }
-    
-    
+
+    public static void displayExpandedFlightPlan(FlightPlan flightPlan) {
+        if (currentClassState.equals(SeatingClassState.COACH)) {
+            flightPlan.setAllCoachSeating();
+        } else {
+            flightPlan.setAllFirstClassSeating();
+        }
+        flightSearchPanel.displayExpandedFlight(flightPlan);
+        jScrollPane.setViewportView(flightSearchPanel);
+    }
+
     // Display error text in flightSearchPanel
-    private void displayError(String errorStr)
-    {
+    public static void displayError(String errorStr) {
         flightSearchPanel.displayText("Error: " + errorStr);
     }
 
@@ -148,6 +211,7 @@ public class MainJFrame extends javax.swing.JFrame {
         timeReturnEnd = new javax.swing.JSpinner();
         jScrollPane = new javax.swing.JScrollPane();
         searchButton = new javax.swing.JButton();
+        jMenuBarPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -189,6 +253,8 @@ public class MainJFrame extends javax.swing.JFrame {
         textFieldArrivalLocation.setMinimumSize(new java.awt.Dimension(170, 20));
         textFieldArrivalLocation.setPreferredSize(new java.awt.Dimension(170, 20));
 
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
         timeDepartStart.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeDepartStart.setEditor(new JSpinner.DateEditor(timeDepartStart, "hh:mm a"));
         timeDepartStart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -203,6 +269,8 @@ public class MainJFrame extends javax.swing.JFrame {
             }
         });
 
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
         timeDepartEnd.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeDepartEnd.setEditor(new JSpinner.DateEditor(timeDepartEnd, "hh:mm a"));
         timeDepartEnd.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -210,6 +278,8 @@ public class MainJFrame extends javax.swing.JFrame {
 
         jPanel1.setVisible(true);
 
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
         timeReturnStart.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeReturnStart.setEditor(new JSpinner.DateEditor(timeReturnStart, "hh:mm a"));
         timeReturnStart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -224,6 +294,8 @@ public class MainJFrame extends javax.swing.JFrame {
             }
         });
 
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
         timeReturnEnd.setModel(new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE));
         timeReturnEnd.setEditor(new JSpinner.DateEditor(timeReturnEnd, "hh:mm a"));
         timeReturnEnd.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -260,6 +332,17 @@ public class MainJFrame extends javax.swing.JFrame {
             }
         });
 
+        javax.swing.GroupLayout jMenuBarPanelLayout = new javax.swing.GroupLayout(jMenuBarPanel);
+        jMenuBarPanel.setLayout(jMenuBarPanelLayout);
+        jMenuBarPanelLayout.setHorizontalGroup(
+            jMenuBarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jMenuBarPanelLayout.setVerticalGroup(
+            jMenuBarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 24, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -295,7 +378,8 @@ public class MainJFrame extends javax.swing.JFrame {
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(returnDateChooser, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(textFieldArrivalLocation, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                        .addComponent(textFieldArrivalLocation, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jMenuBarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -325,8 +409,10 @@ public class MainJFrame extends javax.swing.JFrame {
                         .addComponent(timeDepartEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(searchButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 267, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jMenuBarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -361,6 +447,30 @@ public class MainJFrame extends javax.swing.JFrame {
 
     // On Search button press 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+
+        if(departureDateChooser.getDate() == null)
+        {
+            displayError("Date is not set!");
+            return;
+        }
+
+        calendar.setTime(departureDateChooser.getDate());
+        calendar.set(Calendar.SECOND, 0);
+
+        Calendar tempCal = Calendar.getInstance();
+
+        tempCal.setTime((Date) timeDepartStart.getModel().getValue());
+        calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
+
+        Date dateDepartStart = calendar.getTime();
+
+        tempCal.setTime((Date) timeDepartEnd.getModel().getValue());
+        calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
+
+        Date dateDepartEnd = calendar.getTime();
+
         String depCode = textFieldDepartureLocation.getText();
         String arrCode = textFieldArrivalLocation.getText();
 
@@ -368,9 +478,25 @@ public class MainJFrame extends javax.swing.JFrame {
 
         // If one-way
         if (currentTravelState.equals(TravelState.ONE_WAY)) {
-            result = searcher.searchOneWayTrip(depCode, arrCode, departureDateChooser.getDate());
+            result = searcher.searchOneWayTrip(depCode, arrCode, dateDepartStart, dateDepartEnd);
         } else { // Round trip
-            result = searcher.searchRoundTrip(depCode, arrCode, departureDateChooser.getDate(), returnDateChooser.getDate());
+
+            calendar.setTime(returnDateChooser.getDate());
+            calendar.set(Calendar.SECOND, 0);
+
+            tempCal.setTime((Date) timeReturnStart.getModel().getValue());
+            calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
+
+            Date dateReturnStart = calendar.getTime();
+
+            tempCal.setTime((Date) timeReturnEnd.getModel().getValue());
+            calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
+
+            Date dateReturnEnd = calendar.getTime();
+
+            result = searcher.searchRoundTrip(depCode, arrCode, dateDepartStart, dateDepartEnd, dateReturnStart, dateReturnEnd);
         }
 
         // If result is valid
@@ -378,16 +504,15 @@ public class MainJFrame extends javax.swing.JFrame {
 
             // If Search Result
             if (result instanceof SearchResult) {
-          
+
                 latestSearchResult = (SearchResult) result;
                 displaySearchResult();
-                
-            } 
-            // Else if error
+
+            } // Else if error
             else if (result instanceof ErrorResult) {
-                
-                displayError(((ErrorResult)result).getError());
-            
+
+                displayError(((ErrorResult) result).getError());
+
             }
         } else {
             displayError("An unknown error has occurred!");
@@ -397,8 +522,9 @@ public class MainJFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.toedter.calendar.JDateChooser departureDateChooser;
+    private javax.swing.JPanel jMenuBarPanel;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane;
+    private static javax.swing.JScrollPane jScrollPane;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private com.toedter.calendar.JDateChooser returnDateChooser;

@@ -5,6 +5,7 @@
  */
 package search;
 
+import client.Flight;
 import java.util.Comparator;
 
 
@@ -43,11 +44,20 @@ public abstract class FlightPlan {
         return travelTime;
     }
     
+    // Get current price for all Flights based on current seating preferences
+    abstract public double getPrice();
+    
     // Return if can reserve coach for all Flights
     abstract public boolean canReserveCoach();
 
     // Return if can reserve first class for all Flights
     abstract public boolean canReserveFirstClass();
+    
+    abstract public void setAllCoachSeating();
+    
+    abstract public void setAllFirstClassSeating();
+    
+    abstract public void setSeating(Flight flight, boolean coachSeatingSelected);
     
     // Comparator for sorting by coach price
     static Comparator<FlightPlan> getCoachPriceComparator() {
