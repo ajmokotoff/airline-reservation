@@ -121,7 +121,10 @@ public class Reserver {
      * @param isOneWay indicating it is an one way or round trip.
      * @return if reserving plan is successful
      */
-    public ReserveResult reservePlan(FlightPlan flightplan, boolean isOneWay){
+    public ReserveResult reservePlan(FlightPlan flightplan){
+        
+        boolean isOneWay = flightplan instanceof FlightPlanOneWay;
+        
         HashMap<Flight, Boolean> result=new HashMap<>();
         boolean all=true;
 

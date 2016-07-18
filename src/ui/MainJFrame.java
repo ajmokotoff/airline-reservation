@@ -16,6 +16,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.SpinnerDateModel;
+import reserve.ReserveResult;
+import reserve.Reserver;
 import search.ErrorResult;
 import search.FlightPlan;
 import search.Result;
@@ -62,6 +64,9 @@ public class MainJFrame extends javax.swing.JFrame {
 
     private final Searcher searcher;
     private static SearchResult latestSearchResult;
+    
+    private static Reserver reserver;
+    private static ReserveResult latestReserveResult;
 
     JMenuBar menuBar;
     JCheckBoxMenuItem priceMenuItem;
@@ -85,6 +90,8 @@ public class MainJFrame extends javax.swing.JFrame {
         jScrollPane.setViewportView(flightSearchPanel);
 
         searcher = new Searcher();
+        
+        reserver = new Reserver();
 
         toggleRoundTrip(false);
 
@@ -185,6 +192,12 @@ public class MainJFrame extends javax.swing.JFrame {
     // Display error text in flightSearchPanel
     public static void displayError(String errorStr) {
         flightSearchPanel.displayText("Error: " + errorStr);
+    }
+    
+    public static void reserveFlightPlan(FlightPlan flightPlan)
+    {
+        latestReserveResult = reserver.reservePlan(flightPlan);
+        flightSearchPanel.displayText(latestReserveResult.getResultString());
     }
 
     /**
