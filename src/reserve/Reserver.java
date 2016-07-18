@@ -53,14 +53,14 @@ public class Reserver {
     private boolean checkOneWayAvailable(FlightPlanOneWay plan){
         boolean result = true;
         for(Flight f:plan.getFlightList()){
-            if(plan.flightSeatingIsCoach(f)) result&=(f.checkCoachLeft()>0);
+            if(plan.coachSeatingSelected(f)) result&=(f.checkCoachLeft()>0);
             else result&=(f.checkFirstLeft()>0);
         }
         return result;
     }
 
     /**
-     * check if flight's saet are available in round trip plan
+     * check if flight's seat are available in round trip plan
      * @param plan round trip flight plan
      * @return if all seats are available
      */
@@ -141,7 +141,7 @@ public class Reserver {
         if(isOneWay){
             FlightPlanOneWay plan = (FlightPlanOneWay) flightplan;
             for (Flight f : plan.getFlightList()) {
-                boolean succeed = reserveOneFlight(f,plan.flightSeatingIsCoach(f));
+                boolean succeed = reserveOneFlight(f,plan.coachSeatingSelected(f));
                 result.put(f, succeed);
                 all&=succeed;
             }
@@ -149,12 +149,12 @@ public class Reserver {
             FlightPlanRoundTrip plan = (FlightPlanRoundTrip) flightplan;
             FlightPlanOneWay dep=plan.getDepartingFlightPlan(),ret=plan.getReturningFlightPlan();
             for(Flight f:dep.getFlightList()){
-                boolean succeed = reserveOneFlight(f,dep.flightSeatingIsCoach(f));
+                boolean succeed = reserveOneFlight(f,dep.coachSeatingSelected(f));
                 result.put(f, succeed);
                 all&=succeed;
             }
             for(Flight f:ret.getFlightList()){
-                boolean succeed = reserveOneFlight(f,ret.flightSeatingIsCoach(f));
+                boolean succeed = reserveOneFlight(f,ret.coachSeatingSelected(f));
                 result.put(f, succeed);
                 all&=succeed;
             }
