@@ -53,19 +53,20 @@ public class FlightPlanOneWay extends FlightPlan {
     public int getNumberOfTransfers() {
         return flightList.size() - 1;
     }
-    
-    public void setFlightSeatingToCoach(Flight flight)
-    {
+
+    public boolean contains(Flight flight) {
+        return flightList.contains(flight);
+    }
+
+    public void setFlightSeatingToCoach(Flight flight) {
         flightSeatingIsCoachMap.put(flight, Boolean.TRUE);
     }
-    
-    public void setFlightSeatingToFirstClass(Flight flight)
-    {
+
+    public void setFlightSeatingToFirstClass(Flight flight) {
         flightSeatingIsCoachMap.put(flight, Boolean.FALSE);
     }
-    
-    public boolean flightSeatingIsCoach(Flight flight)
-    {
+
+    public boolean coachSeatingSelected(Flight flight) {
         return flightSeatingIsCoachMap.get(flight);
     }
 
@@ -135,6 +136,28 @@ public class FlightPlanOneWay extends FlightPlan {
             }
         }
         return true;
+    }
+
+    @Override
+    public void setAllCoachSeating() {
+        for (Flight flight : flightList) {
+            flightSeatingIsCoachMap.put(flight, Boolean.TRUE);
+        }
+    }
+
+    @Override
+    public void setAllFirstClassSeating() {
+        for (Flight flight : flightList) {
+            flightSeatingIsCoachMap.put(flight, Boolean.FALSE);
+        }
+    }
+
+    @Override
+    public void setSeating(Flight flight, boolean coachSeatingSelected) {
+        if(flightList.contains(flight))
+        {
+            flightSeatingIsCoachMap.put(flight, coachSeatingSelected);
+        }
     }
 
 }

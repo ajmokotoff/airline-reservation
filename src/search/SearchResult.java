@@ -122,7 +122,7 @@ public class SearchResult extends Result {
     
     // Sort filtered list by first class time
     public void sortByFirstClassTime() {
-        initializeFilteredList(filteredFlightPlanList);
+        initializeFilteredList(firstClassFlightPlanList);
         Collections.sort(filteredFlightPlanList, FlightPlan.getTimeComparator());
     }
 

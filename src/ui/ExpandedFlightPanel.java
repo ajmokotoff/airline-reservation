@@ -6,13 +6,22 @@
 package ui;
 
 import client.Flight;
-import java.util.Date;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JPanel;
+import search.FlightPlan;
+import search.FlightPlanOneWay;
+import search.FlightPlanRoundTrip;
 
 /**
  *
  * @author Mike
  */
-public class ExpandedFlightPanel extends FlightPanel {
+public class ExpandedFlightPanel extends JPanel {
+
+    FlightPlan flightPlan;
 
     /**
      * Creates new form ExpandedFlightPanel
@@ -20,11 +29,49 @@ public class ExpandedFlightPanel extends FlightPanel {
     public ExpandedFlightPanel() {
         super();
         initComponents();
+        
+        flightItemListPanel.setLayout(new GridLayout(0, 1));
     }
 
-    
-    public void updateFlight(String flightNumber, double price, int numTransfers, Date departTime) {
-        updatePanel(flightNumber, price, numTransfers, departTime);
+    public void updateFlightPlan(FlightPlan flightPlan) {
+        flightItemListPanel.removeAll();
+        this.flightPlan = flightPlan;
+
+        int numFlights;
+        
+        if (flightPlan instanceof FlightPlanOneWay) {
+            addFlightPlanOneWay((FlightPlanOneWay) flightPlan);
+            numFlights = 1 + ((FlightPlanOneWay) flightPlan).getNumberOfTransfers();
+        } else {
+            addFlightPlanOneWay(((FlightPlanRoundTrip) flightPlan).getDepartingFlightPlan());
+            addFlightPlanOneWay(((FlightPlanRoundTrip) flightPlan).getReturningFlightPlan());
+            
+            numFlights = 2;
+            numFlights += ((FlightPlanRoundTrip) flightPlan).getDepartingFlightPlan().getNumberOfTransfers();
+            numFlights += ((FlightPlanRoundTrip) flightPlan).getReturningFlightPlan().getNumberOfTransfers();
+        }
+        
+        priceTextField.setText("$" + String.format("%.2f",flightPlan.getPrice()));
+        numFlightsTextField.setText(String.valueOf(numFlights) + " flight" + (numFlights == 1 ? "" : "s"));
+        travelTimeTextField.setText("~" + flightPlan.getTravelTime()/(1000 * 60 * 60) + "h travel time");
+    }
+
+    private void addFlightPlanOneWay(FlightPlanOneWay flightPlan) {
+        for (Flight flight : flightPlan.getFlightList()) {
+            ExpandedFlightItem item = new ExpandedFlightItem(flight, flightPlan.coachSeatingSelected(flight));
+            
+            JPanel wrappingPanel = new JPanel();
+            wrappingPanel.setLayout(new BorderLayout());
+            wrappingPanel.add(item, BorderLayout.NORTH);
+            flightItemListPanel.add(wrappingPanel);
+        }
+        
+        flightItemListPanel.revalidate();
+    }
+
+    public void updateSeatingChoice(Flight flight, boolean coachSeatingSelected) {
+        flightPlan.setSeating(flight, coachSeatingSelected);
+        priceTextField.setText("$" + String.format("%.2f",flightPlan.getPrice()));
     }
 
     /**
@@ -34,67 +81,77 @@ public class ExpandedFlightPanel extends FlightPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        costTextField = new javax.swing.JFormattedTextField();
-        numTransfersTextField = new javax.swing.JTextField();
-        departTimeTextField = new javax.swing.JTextField();
-        flightNumberTextField = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        priceTextField = new javax.swing.JFormattedTextField();
+        numFlightsTextField = new javax.swing.JTextField();
+        travelTimeTextField = new javax.swing.JTextField();
+        jButtonReserve = new javax.swing.JButton();
+        jButtonCancel = new javax.swing.JButton();
+        flightItemListPanel = new javax.swing.JPanel();
 
-        costTextField.setEditable(false);
-        costTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("¤#,##0"))));
-        costTextField.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        costTextField.addActionListener(new java.awt.event.ActionListener() {
+        setMaximumSize(new java.awt.Dimension(322, 32767));
+        setPreferredSize(new java.awt.Dimension(322, 300));
+
+        priceTextField.setEditable(false);
+        priceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("¤#,##0"))));
+        priceTextField.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        priceTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                costTextFieldActionPerformed(evt);
+                priceTextFieldActionPerformed(evt);
             }
         });
 
-        numTransfersTextField.setEditable(false);
-        numTransfersTextField.setText("# transfers");
-        numTransfersTextField.addActionListener(new java.awt.event.ActionListener() {
+        numFlightsTextField.setEditable(false);
+        numFlightsTextField.setText("# flights");
+        numFlightsTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                numTransfersTextFieldActionPerformed(evt);
+                numFlightsTextFieldActionPerformed(evt);
             }
         });
 
-        departTimeTextField.setEditable(false);
-        departTimeTextField.setText("depart time");
+        travelTimeTextField.setEditable(false);
+        travelTimeTextField.setText("travel time");
 
-        flightNumberTextField.setEditable(false);
-        flightNumberTextField.setText("flight #");
-        flightNumberTextField.addActionListener(new java.awt.event.ActionListener() {
+        jButtonReserve.setText("Reserve Flight");
+        jButtonReserve.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                flightNumberTextFieldActionPerformed(evt);
+                jButtonReserveActionPerformed(evt);
             }
         });
 
-        jButton1.setText("Reserve Flight");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonCancel.setText("Cancel");
+        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonCancelActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Cancel");
+        javax.swing.GroupLayout flightItemListPanelLayout = new javax.swing.GroupLayout(flightItemListPanel);
+        flightItemListPanel.setLayout(flightItemListPanelLayout);
+        flightItemListPanelLayout.setHorizontalGroup(
+            flightItemListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        flightItemListPanelLayout.setVerticalGroup(
+            flightItemListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 30, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(costTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(flightItemListPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(priceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(numTransfersTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+                        .addComponent(numFlightsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(departTimeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(flightNumberTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE))
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(travelTimeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE))
+                    .addComponent(jButtonCancel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonReserve, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -102,41 +159,43 @@ public class ExpandedFlightPanel extends FlightPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(costTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(departTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(flightNumberTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(numTransfersTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                    .addComponent(priceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(numFlightsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(travelTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(flightItemListPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonReserve)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void costTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_costTextFieldActionPerformed
+    private void priceTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_priceTextFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_costTextFieldActionPerformed
+    }//GEN-LAST:event_priceTextFieldActionPerformed
 
-    private void numTransfersTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numTransfersTextFieldActionPerformed
+    private void numFlightsTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numFlightsTextFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_numTransfersTextFieldActionPerformed
+    }//GEN-LAST:event_numFlightsTextFieldActionPerformed
 
-    private void flightNumberTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_flightNumberTextFieldActionPerformed
+    private void jButtonReserveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReserveActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_flightNumberTextFieldActionPerformed
+    }//GEN-LAST:event_jButtonReserveActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
+        MainJFrame.displaySearchResult();
+    }//GEN-LAST:event_jButtonCancelActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JFormattedTextField costTextField;
-    private javax.swing.JTextField departTimeTextField;
-    private javax.swing.JTextField flightNumberTextField;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JTextField numTransfersTextField;
+    private javax.swing.JPanel flightItemListPanel;
+    private javax.swing.JButton jButtonCancel;
+    private javax.swing.JButton jButtonReserve;
+    private javax.swing.JTextField numFlightsTextField;
+    private javax.swing.JFormattedTextField priceTextField;
+    private javax.swing.JTextField travelTimeTextField;
     // End of variables declaration//GEN-END:variables
 }

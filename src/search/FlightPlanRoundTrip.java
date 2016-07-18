@@ -5,6 +5,8 @@
  */
 package search;
 
+import client.Flight;
+
 /**
  * FlightPlanOneWay class
  * <p>
@@ -51,6 +53,31 @@ public class FlightPlanRoundTrip extends FlightPlan {
     @Override
     public boolean canReserveFirstClass() {
         return departingFlightPlan.canReserveFirstClass() && returningFlightPlan.canReserveFirstClass();
+    }
+
+    @Override
+    public void setAllCoachSeating() {
+        departingFlightPlan.setAllCoachSeating();
+        returningFlightPlan.setAllCoachSeating();
+    }
+
+    @Override
+    public void setAllFirstClassSeating() {
+        departingFlightPlan.setAllFirstClassSeating();
+        returningFlightPlan.setAllFirstClassSeating();
+    }
+
+    @Override
+    public void setSeating(Flight flight, boolean coachSeatingSelected) {
+        if(departingFlightPlan.contains(flight))
+        {
+            departingFlightPlan.setSeating(flight, coachSeatingSelected);
+        }
+        
+        if(returningFlightPlan.contains(flight))
+        {
+            returningFlightPlan.setSeating(flight, coachSeatingSelected);
+        }
     }
 
 }
