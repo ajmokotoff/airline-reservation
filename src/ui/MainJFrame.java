@@ -9,6 +9,8 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -64,7 +66,7 @@ public class MainJFrame extends javax.swing.JFrame {
 
     private final Searcher searcher;
     private static SearchResult latestSearchResult;
-    
+
     private static Reserver reserver;
     private static ReserveResult latestReserveResult;
 
@@ -90,7 +92,7 @@ public class MainJFrame extends javax.swing.JFrame {
         jScrollPane.setViewportView(flightSearchPanel);
 
         searcher = new Searcher();
-        
+
         reserver = new Reserver();
 
         toggleRoundTrip(false);
@@ -193,9 +195,8 @@ public class MainJFrame extends javax.swing.JFrame {
     public static void displayError(String errorStr) {
         flightSearchPanel.displayText("Error: " + errorStr);
     }
-    
-    public static void reserveFlightPlan(FlightPlan flightPlan)
-    {
+
+    public static void reserveFlightPlan(FlightPlan flightPlan) {
         latestReserveResult = reserver.reservePlan(flightPlan);
         flightSearchPanel.displayText(latestReserveResult.getResultString());
     }
@@ -211,8 +212,6 @@ public class MainJFrame extends javax.swing.JFrame {
         toggleButtonRoundTrip = new javax.swing.JToggleButton();
         toggleButtonCoachSeating = new javax.swing.JToggleButton();
         toggleButtonFirstClassSeating = new javax.swing.JToggleButton();
-        textFieldDepartureLocation = new JGhostTextField("Departure Location");
-        textFieldArrivalLocation = new JGhostTextField("Arrivial Location");
         departureDateChooser = new com.toedter.calendar.JDateChooser();
         returnDateChooser = new com.toedter.calendar.JDateChooser();
         timeDepartStart = new javax.swing.JSpinner();
@@ -225,6 +224,8 @@ public class MainJFrame extends javax.swing.JFrame {
         jScrollPane = new javax.swing.JScrollPane();
         searchButton = new javax.swing.JButton();
         jMenuBarPanel = new javax.swing.JPanel();
+        comboBoxDepartureLocation = new javax.swing.JComboBox();
+        comboBoxArrivalLocation = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -258,13 +259,6 @@ public class MainJFrame extends javax.swing.JFrame {
                 toggleButtonFirstClassSeatingActionPerformed(evt);
             }
         });
-
-        textFieldDepartureLocation.setToolTipText("");
-        textFieldDepartureLocation.setMinimumSize(new java.awt.Dimension(170, 20));
-        textFieldDepartureLocation.setPreferredSize(new java.awt.Dimension(170, 20));
-
-        textFieldArrivalLocation.setMinimumSize(new java.awt.Dimension(170, 20));
-        textFieldArrivalLocation.setPreferredSize(new java.awt.Dimension(170, 20));
 
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -356,6 +350,10 @@ public class MainJFrame extends javax.swing.JFrame {
             .addGap(0, 24, Short.MAX_VALUE)
         );
 
+        comboBoxDepartureLocation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Departure Location", "ANC", "ATL", "AUS", "BDL", "BNA", "BOS", "BWI", "CLE", "CLT", "CMH", "CVG", "DCA", "DEN", "DFW", "DTW", "EWR", "FLL", "HNL", "HOU", "IAD", "IAH", "IND", "JFK", "LAS", "LAX", "LGA", "MCI", "MCO", "MDW", "MEM", "MIA", "MSP", "MSY", "OAK", "ONT", "ORD", "PDX", "PHL", "PHX", "PIT", "RDU", "RSW", "SAN", "SAT", "SEA", "SFO", "SJC", "SLC", "SMF", "SNA", "STL", "TPA" }));
+
+        comboBoxArrivalLocation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Arrival Location", "ANC", "ATL", "AUS", "BDL", "BNA", "BOS", "BWI", "CLE", "CLT", "CMH", "CVG", "DCA", "DEN", "DFW", "DTW", "EWR", "FLL", "HNL", "HOU", "IAD", "IAH", "IND", "JFK", "LAS", "LAX", "LGA", "MCI", "MCO", "MDW", "MEM", "MIA", "MSP", "MSY", "OAK", "ONT", "ORD", "PDX", "PHL", "PHX", "PIT", "RDU", "RSW", "SAN", "SAT", "SEA", "SFO", "SJC", "SLC", "SMF", "SNA", "STL", "TPA"}));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -368,30 +366,28 @@ public class MainJFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(searchButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(departureDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                            .addComponent(toggleButtonOneWay)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(toggleButtonRoundTrip))
-                                        .addComponent(textFieldDepartureLocation, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(departureDateChooser, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(toggleButtonOneWay)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(toggleButtonRoundTrip))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(timeDepartStart, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(timeDepartEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(timeDepartEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(comboBoxDepartureLocation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(34, 34, 34)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(toggleButtonCoachSeating)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(toggleButtonFirstClassSeating))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(returnDateChooser, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(textFieldArrivalLocation, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(returnDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(comboBoxArrivalLocation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addComponent(jMenuBarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -406,9 +402,9 @@ public class MainJFrame extends javax.swing.JFrame {
                     .addComponent(toggleButtonCoachSeating)
                     .addComponent(toggleButtonFirstClassSeating))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textFieldDepartureLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textFieldArrivalLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(comboBoxDepartureLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboBoxArrivalLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(departureDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -461,8 +457,7 @@ public class MainJFrame extends javax.swing.JFrame {
     // On Search button press 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
 
-        if(departureDateChooser.getDate() == null)
-        {
+        if (departureDateChooser.getDate() == null) {
             displayError("Date is not set!");
             return;
         }
@@ -484,8 +479,8 @@ public class MainJFrame extends javax.swing.JFrame {
 
         Date dateDepartEnd = calendar.getTime();
 
-        String depCode = textFieldDepartureLocation.getText();
-        String arrCode = textFieldArrivalLocation.getText();
+        String depCode = (String) comboBoxDepartureLocation.getSelectedItem();
+        String arrCode = (String) comboBoxArrivalLocation.getSelectedItem();
 
         Result result;
 
@@ -534,6 +529,8 @@ public class MainJFrame extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox comboBoxArrivalLocation;
+    private javax.swing.JComboBox comboBoxDepartureLocation;
     private com.toedter.calendar.JDateChooser departureDateChooser;
     private javax.swing.JPanel jMenuBarPanel;
     private javax.swing.JPanel jPanel1;
@@ -542,8 +539,6 @@ public class MainJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField2;
     private com.toedter.calendar.JDateChooser returnDateChooser;
     private javax.swing.JButton searchButton;
-    private javax.swing.JTextField textFieldArrivalLocation;
-    private javax.swing.JTextField textFieldDepartureLocation;
     private javax.swing.JSpinner timeDepartEnd;
     private javax.swing.JSpinner timeDepartStart;
     private javax.swing.JSpinner timeReturnEnd;

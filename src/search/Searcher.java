@@ -48,11 +48,16 @@ public class Searcher {
     public Result searchOneWayTrip(String depCode, String arrCode, Date startDate, Date endDate) {
 
         if (!isValidAirportCode(depCode)) {
-            return new ErrorResult("Invalid departure Airport Code!");
+            return new ErrorResult("Please select a Departure Airport Code!");
         }
 
         if (!isValidAirportCode(arrCode)) {
-            return new ErrorResult("Invalid arrival Airport Code!");
+            return new ErrorResult("Please select an Arrival Airport Code!");
+        }
+        
+        if(depCode.equals(arrCode))
+        {
+            return new ErrorResult("Departure and Arrival locations the same!");
         }
 
         if (startDate == null) {
