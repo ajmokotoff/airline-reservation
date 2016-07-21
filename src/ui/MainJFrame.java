@@ -15,6 +15,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.SpinnerDateModel;
@@ -197,8 +198,14 @@ public class MainJFrame extends javax.swing.JFrame {
     }
 
     public static void reserveFlightPlan(FlightPlan flightPlan) {
-        latestReserveResult = reserver.reservePlan(flightPlan);
-        flightSearchPanel.displayText(latestReserveResult.getResultString());
+
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you would like to reserve these flights?", "Warning", dialogButton);
+        if (dialogResult == JOptionPane.YES_OPTION) {
+
+            latestReserveResult = reserver.reservePlan(flightPlan);
+            flightSearchPanel.displayText(latestReserveResult.getResultString());
+        }
     }
 
     /**

@@ -117,7 +117,16 @@ public class ReserveResult {
             return errorStr;
 
         } else {
-            return "All flights successfully reserved!";
+
+            String successStr = "All flights successfully reserved!\n\nFlights:\n";
+
+            for (Map.Entry<Flight, Boolean> entry : result.entrySet()) {
+
+                successStr += "- #" + entry.getKey().getFlightNo() + "\n";
+
+            }
+
+            return successStr;
         }
     }
 
