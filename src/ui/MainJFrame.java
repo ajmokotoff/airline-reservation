@@ -7,6 +7,7 @@ package ui;
 
 import client.Airports;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,10 +15,12 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.SpinnerDateModel;
@@ -128,6 +131,7 @@ public class MainJFrame extends javax.swing.JFrame {
         sortByMenu.add(timeMenuItem);
 
         menuBar.add(sortByMenu);
+        menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
         jMenuBarPanel.setLayout(new BorderLayout());
         jMenuBarPanel.add(menuBar, BorderLayout.NORTH);
