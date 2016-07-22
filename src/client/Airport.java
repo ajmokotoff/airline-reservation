@@ -1,5 +1,7 @@
 package client;
 
+import java.util.TimeZone;
+
 /**
  * Airport class
  * <p>
@@ -28,13 +30,13 @@ public class Airport {
     /**
      * Time zone
      */
-    private String tz;
+    private TimeZone tz;
 
     public Airport(){}
 
     public double getLat(){return lat;}
     public double getLon(){return lon;}
-    public String getTimezone(){return tz;}
+    public TimeZone getTimezone(){return tz;}
     /**
      * Constructor with double lat,lon input
      */
@@ -43,7 +45,9 @@ public class Airport {
         this.code=code;
         this.lat=lat;
         this.lon=lon;
-        this.tz = TimeZoneMapper.latLngToTimezoneString(lat,lon);
+        String tzId = TimeZoneMapper.latLngToTimezoneString(lat,lon);
+        this.tz = TimeZone.getTimeZone(tzId);
+
     }
 
     /**
