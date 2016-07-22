@@ -8,6 +8,7 @@ package ui;
 import client.Airports;
 import client.Flight;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.TimeZone;
 import javax.swing.JPanel;
@@ -53,6 +54,8 @@ public class ExpandedFlightPanel extends JPanel {
             numFlights += ((FlightPlanRoundTrip) flightPlan).getDepartingFlightPlan().getNumberOfTransfers();
             numFlights += ((FlightPlanRoundTrip) flightPlan).getReturningFlightPlan().getNumberOfTransfers();
         }
+        
+        this.setPreferredSize(new Dimension(322, 120 + 54*numFlights));
 
         priceTextField.setText("$" + String.format("%.2f", flightPlan.getPrice()));
         numFlightsTextField.setText(String.valueOf(numFlights) + " flight" + (numFlights == 1 ? "" : "s"));
