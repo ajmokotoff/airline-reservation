@@ -25,9 +25,16 @@ public class Airport {
      * longitude of airport
      */
     private double lon;
+    /**
+     * Time zone
+     */
+    private String tz;
 
     public Airport(){}
 
+    public double getLat(){return lat;}
+    public double getLon(){return lon;}
+    public String getTimezone(){return tz;}
     /**
      * Constructor with double lat,lon input
      */
@@ -36,6 +43,7 @@ public class Airport {
         this.code=code;
         this.lat=lat;
         this.lon=lon;
+        this.tz = TimeZoneMapper.latLngToTimezoneString(lat,lon);
     }
 
     /**
