@@ -5,10 +5,12 @@
  */
 package ui;
 
+import client.Airports;
 import client.Flight;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 /**
  *
@@ -24,12 +26,14 @@ public class ExpandedFlightItem extends javax.swing.JPanel {
      *
      * @param flight
      * @param coachSeatingSelected
+     * @param tz
      */
-    public ExpandedFlightItem(Flight flight, boolean coachSeatingSelected) {
+    public ExpandedFlightItem(Flight flight, boolean coachSeatingSelected, TimeZone tz) {
         this.flight = flight;
         initComponents();
 
         dateFormat = new SimpleDateFormat("hh:mm a");
+        dateFormat.setTimeZone(tz);
         flightNumberTextField.setText("#" + flight.getFlightNo());
         flightCodesTextField.setText(flight.getDepCode() + "->" + flight.getArrCode());
         departTimeTextField.setText(dateFormat.format(flight.getDepTime()));

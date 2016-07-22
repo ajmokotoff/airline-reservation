@@ -5,10 +5,12 @@
  */
 package ui;
 
+import client.Airports;
 import client.Flight;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import search.FlightPlan;
 import search.FlightPlanOneWay;
@@ -38,15 +40,17 @@ public class FlightPanel extends javax.swing.JPanel {
         initComponents();
 
         dateFormat = new SimpleDateFormat("hh:mm a");
-
+        
         if (flightPlan instanceof FlightPlanOneWay) {
             FlightPlanOneWay oneWay = (FlightPlanOneWay) flightPlan;
             Flight departureFlight = oneWay.getFlightList().get(0);
-            updatePanel(departureFlight.getFlightNo(), oneWay.getCoachPrice(), oneWay.getNumberOfTransfers(), departureFlight.getDepTime());
+            dateFormat.setTimeZone(Airports.get().get(departureFlight.getDepCode()).getTimezone());
+            updatePanel(departureFlight, departureFlight.getFlightNo(), oneWay.getCoachPrice(), oneWay.getNumberOfTransfers(), departureFlight.getDepTime());
         } else if (flightPlan instanceof FlightPlanRoundTrip) {
             FlightPlanRoundTrip roundTrip = (FlightPlanRoundTrip) flightPlan;
             Flight departureFlight = roundTrip.getDepartingFlightPlan().getFlightList().get(0);
-            updatePanel(departureFlight.getFlightNo(), roundTrip.getCoachPrice(), roundTrip.getDepartingFlightPlan().getNumberOfTransfers(), departureFlight.getDepTime());
+            dateFormat.setTimeZone(Airports.get().get(departureFlight.getDepCode()).getTimezone());
+            updatePanel(departureFlight, departureFlight.getFlightNo(), roundTrip.getCoachPrice(), roundTrip.getDepartingFlightPlan().getNumberOfTransfers(), departureFlight.getDepTime());
         }
 
         //FlightPanelMouseAdapter mouseAdapter = new FlightPanelMouseAdapter();
@@ -61,11 +65,15 @@ public class FlightPanel extends javax.swing.JPanel {
     protected FlightPanel() {
     }
 
-    protected final void updatePanel(String flightNumber, double price, int numTransfers, Date departTime) {
+    protected final void updatePanel(Flight flight, String flightNumber, double price, int numTransfers, Date departTime) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(departTime);
+        cal.setTimeZone(Airports.get().get(flight.getDepCode()).getTimezone());
+        
         flightNumberTextField.setText("#" + flightNumber);
         costTextField.setText("$" + String.format("%.2f", price));
         numTransfersTextField.setText(getNumTransfersString(numTransfers));
-        departTimeTextField.setText(dateFormat.format(departTime));
+        departTimeTextField.setText(dateFormat.format(cal.getTime()));
     }
 
     public void displayCoachPrice() {

@@ -5,10 +5,12 @@
  */
 package ui;
 
+import client.Airports;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
@@ -58,7 +60,7 @@ public class MainJFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainJFrame
      */
-    private final Calendar calendar;
+    private Calendar calendar;
     private static FlightSearchPanel flightSearchPanel;
 
     private static TravelState currentTravelState;
@@ -463,32 +465,54 @@ public class MainJFrame extends javax.swing.JFrame {
 
     // On Search button press 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
-
+        
+        calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        
         if (departureDateChooser.getDate() == null) {
             displayError("Date is not set!");
             return;
         }
+        
+        if (comboBoxDepartureLocation.getSelectedIndex() == 0) {
+            displayError("Please select a departure location!");
+            return;
+        }
+        
+        if (comboBoxArrivalLocation.getSelectedIndex() == 0) {
+            displayError("Please select a destination!");
+            return;
+        }
+        
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        
+        String depCode = (String) comboBoxDepartureLocation.getSelectedItem();
+        String arrCode = (String) comboBoxArrivalLocation.getSelectedItem();
+        
+        TimeZone tz = Airports.get().get(depCode).getTimezone();
 
         calendar.setTime(departureDateChooser.getDate());
         calendar.set(Calendar.SECOND, 0);
 
         Calendar tempCal = Calendar.getInstance();
-
+        
         tempCal.setTime((Date) timeDepartStart.getModel().getValue());
         calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
         calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
-
+        calendar.setTimeZone(tz);
+        
         Date dateDepartStart = calendar.getTime();
 
         tempCal.setTime((Date) timeDepartEnd.getModel().getValue());
         calendar.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
         calendar.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
+        calendar.setTimeZone(tz);
 
         Date dateDepartEnd = calendar.getTime();
 
-        String depCode = (String) comboBoxDepartureLocation.getSelectedItem();
-        String arrCode = (String) comboBoxArrivalLocation.getSelectedItem();
-
+        
         Result result;
 
         // If one-way

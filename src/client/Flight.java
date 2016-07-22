@@ -3,6 +3,7 @@ package client;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -71,12 +72,26 @@ public class Flight {
      * constructor for integer type seat number and double type seat price
      */
     public Flight(String flightNo, String depCode, String arrCode,
-                  Date depTime, Date arrTime, int flightTime, String model, int first, int coach, double firstPrice, double coachPrice){
+                  String depTime, String arrTime, int flightTime, String model, int first, int coach, double firstPrice, double coachPrice) throws ParseException{
+        
+        //dateFormatter.setTimeZone(Airports.get().get(depCode).getTimezone());
+        
+        Calendar cal = Calendar.getInstance();
+        
+        //Date temp = dateFormatter.parse(depTime);
+        cal.setTime(dateFormatter.parse(depTime));
+        cal.setTimeZone(Airports.get().get(depCode).getTimezone());
+        this.depTime = cal.getTime();
+        
+        cal.setTime(dateFormatter.parse(arrTime));
+        cal.setTimeZone(Airports.get().get(depCode).getTimezone());
+        this.arrTime = cal.getTime();
+        
         this.flightNo=flightNo;
         this.depCode=depCode;
         this.arrCode=arrCode;
-        this.depTime=depTime;
-        this.arrTime=arrTime;
+        //this.depTime=dateFormatter.parse(depTime);
+        //this.arrTime=dateFormatter.parse(arrTime);
         this.flightTime=flightTime;
         this.model=model;
         this.first=first;
@@ -92,7 +107,7 @@ public class Flight {
                   String depTime, String arrTime, String flightTime, String model,
                   String first, String coach, String  firstPrice, String coachPrice) throws ParseException{
 
-        this(flightNo,depCode,arrCode,dateFormatter.parse(depTime),dateFormatter.parse(arrTime),
+        this(flightNo,depCode,arrCode,depTime,arrTime,
                 Integer.parseInt(flightTime),model,Integer.parseInt(first),Integer.parseInt(coach),
                 Double.parseDouble(firstPrice.replaceAll("[^0-9\\.]","")),Double.parseDouble(coachPrice.replaceAll("[^0-9\\.\\s]","")));
     }
