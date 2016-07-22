@@ -156,6 +156,11 @@ public class Searcher {
             }
 
         }
+        
+        if(flightPlanList.isEmpty())
+        {
+            return new ErrorResult("No valid flights could be found!");
+        }
 
         return new SearchResultOneWay(flightPlanList);
     }
