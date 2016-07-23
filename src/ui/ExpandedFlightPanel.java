@@ -5,11 +5,12 @@
  */
 package ui;
 
+import client.Airports;
 import client.Flight;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.TimeZone;
 import javax.swing.JPanel;
 import search.FlightPlan;
 import search.FlightPlanOneWay;
@@ -29,7 +30,7 @@ public class ExpandedFlightPanel extends JPanel {
     public ExpandedFlightPanel() {
         super();
         initComponents();
-        
+
         flightItemListPanel.setLayout(new GridLayout(0, 1));
     }
 
@@ -38,40 +39,51 @@ public class ExpandedFlightPanel extends JPanel {
         this.flightPlan = flightPlan;
 
         int numFlights;
-        
+
         if (flightPlan instanceof FlightPlanOneWay) {
-            addFlightPlanOneWay((FlightPlanOneWay) flightPlan);
+            addFlightPlanOneWay((FlightPlanOneWay) flightPlan, null);
             numFlights = 1 + ((FlightPlanOneWay) flightPlan).getNumberOfTransfers();
         } else {
-            addFlightPlanOneWay(((FlightPlanRoundTrip) flightPlan).getDepartingFlightPlan());
-            addFlightPlanOneWay(((FlightPlanRoundTrip) flightPlan).getReturningFlightPlan());
+            FlightPlanOneWay departingFlightPlan = ((FlightPlanRoundTrip) flightPlan).getDepartingFlightPlan();
+            TimeZone tz = Airports.get().get(departingFlightPlan.getFlightList().get(0).getDepCode()).getTimezone();
             
+            addFlightPlanOneWay(((FlightPlanRoundTrip) flightPlan).getDepartingFlightPlan(), tz);
+            addFlightPlanOneWay(((FlightPlanRoundTrip) flightPlan).getReturningFlightPlan(), tz);
+
             numFlights = 2;
             numFlights += ((FlightPlanRoundTrip) flightPlan).getDepartingFlightPlan().getNumberOfTransfers();
             numFlights += ((FlightPlanRoundTrip) flightPlan).getReturningFlightPlan().getNumberOfTransfers();
         }
         
-        priceTextField.setText("$" + String.format("%.2f",flightPlan.getPrice()));
+        this.setPreferredSize(new Dimension(322, 120 + 54*numFlights));
+
+        priceTextField.setText("$" + String.format("%.2f", flightPlan.getPrice()));
         numFlightsTextField.setText(String.valueOf(numFlights) + " flight" + (numFlights == 1 ? "" : "s"));
-        travelTimeTextField.setText("~" + flightPlan.getTravelTime()/(1000 * 60 * 60) + "h travel time");
+        travelTimeTextField.setText("~" + flightPlan.getTravelTime() / (1000 * 60 * 60) + "h travel time");
     }
 
-    private void addFlightPlanOneWay(FlightPlanOneWay flightPlan) {
+    private void addFlightPlanOneWay(FlightPlanOneWay flightPlan, TimeZone tz) {
+
+        if (tz == null) {
+            tz = Airports.get().get(flightPlan.getFlightList().get(0).getDepCode()).getTimezone();
+        }
+        
         for (Flight flight : flightPlan.getFlightList()) {
-            ExpandedFlightItem item = new ExpandedFlightItem(flight, flightPlan.coachSeatingSelected(flight));
-            
+            ExpandedFlightItem item = new ExpandedFlightItem(flight, flightPlan.coachSeatingSelected(flight), tz);
+
             JPanel wrappingPanel = new JPanel();
             wrappingPanel.setLayout(new BorderLayout());
             wrappingPanel.add(item, BorderLayout.NORTH);
             flightItemListPanel.add(wrappingPanel);
+            System.out.println(flight.getDepTime().toString() + " - " + flight.getArrTime().toString());
         }
-        
+
         flightItemListPanel.revalidate();
     }
 
     public void updateSeatingChoice(Flight flight, boolean coachSeatingSelected) {
         flightPlan.setSeating(flight, coachSeatingSelected);
-        priceTextField.setText("$" + String.format("%.2f",flightPlan.getPrice()));
+        priceTextField.setText("$" + String.format("%.2f", flightPlan.getPrice()));
     }
 
     /**
@@ -182,7 +194,7 @@ public class ExpandedFlightPanel extends JPanel {
     }//GEN-LAST:event_numFlightsTextFieldActionPerformed
 
     private void jButtonReserveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReserveActionPerformed
-        // TODO add your handling code here:
+        MainJFrame.reserveFlightPlan(flightPlan);
     }//GEN-LAST:event_jButtonReserveActionPerformed
 
     private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed

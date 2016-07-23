@@ -26,13 +26,13 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
-              <Component id="flightNumberTextField" min="-2" pref="45" max="-2" attributes="0"/>
+              <Component id="flightNumberTextField" pref="45" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="flightCodesTextField" min="-2" max="-2" attributes="0"/>
+              <Component id="flightCodesTextField" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="departTimeTextField" pref="59" max="32767" attributes="0"/>
+              <Component id="departTimeTextField" min="-2" pref="59" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="arriveTimeTextField" pref="59" max="32767" attributes="0"/>
+              <Component id="arriveTimeTextField" min="-2" pref="59" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jComboBox" min="-2" pref="90" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>

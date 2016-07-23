@@ -5,10 +5,12 @@
  */
 package ui;
 
+import client.Airports;
 import client.Flight;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 /**
  *
@@ -24,12 +26,14 @@ public class ExpandedFlightItem extends javax.swing.JPanel {
      *
      * @param flight
      * @param coachSeatingSelected
+     * @param tz
      */
-    public ExpandedFlightItem(Flight flight, boolean coachSeatingSelected) {
+    public ExpandedFlightItem(Flight flight, boolean coachSeatingSelected, TimeZone tz) {
         this.flight = flight;
         initComponents();
 
         dateFormat = new SimpleDateFormat("hh:mm a");
+        dateFormat.setTimeZone(tz);
         flightNumberTextField.setText("#" + flight.getFlightNo());
         flightCodesTextField.setText(flight.getDepCode() + "->" + flight.getArrCode());
         departTimeTextField.setText(dateFormat.format(flight.getDepTime()));
@@ -126,13 +130,13 @@ public class ExpandedFlightItem extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(flightNumberTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(flightNumberTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(flightCodesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(flightCodesTextField)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(departTimeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                .addComponent(departTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(arriveTimeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                .addComponent(arriveTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))

@@ -32,15 +32,12 @@
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                           <Component id="searchButton" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                      <Component id="departureDateChooser" max="32767" attributes="0"/>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="toggleButtonOneWay" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="toggleButtonRoundTrip" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Component id="textFieldDepartureLocation" alignment="0" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="departureDateChooser" alignment="1" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="toggleButtonOneWay" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="toggleButtonRoundTrip" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="timeDepartStart" min="-2" pref="74" max="-2" attributes="0"/>
@@ -49,19 +46,18 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="timeDepartEnd" min="-2" pref="74" max="-2" attributes="0"/>
                                   </Group>
+                                  <Component id="comboBoxDepartureLocation" alignment="0" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Group type="102" attributes="0">
                                       <Component id="toggleButtonCoachSeating" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="toggleButtonFirstClassSeating" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                      <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="returnDateChooser" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="textFieldArrivalLocation" alignment="0" max="32767" attributes="0"/>
-                                  </Group>
+                                  <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="returnDateChooser" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="comboBoxArrivalLocation" alignment="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <Component id="jMenuBarPanel" max="32767" attributes="0"/>
@@ -84,9 +80,9 @@
                   <Component id="toggleButtonFirstClassSeating" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="textFieldDepartureLocation" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="textFieldArrivalLocation" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="comboBoxDepartureLocation" min="-2" max="-2" attributes="0"/>
+                  <Component id="comboBoxArrivalLocation" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
@@ -147,33 +143,6 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="toggleButtonFirstClassSeatingActionPerformed"/>
       </Events>
-    </Component>
-    <Component class="javax.swing.JTextField" name="textFieldDepartureLocation">
-      <Properties>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
-        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[170, 20]"/>
-        </Property>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[170, 20]"/>
-        </Property>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JGhostTextField(&quot;Departure Location&quot;)"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JTextField" name="textFieldArrivalLocation">
-      <Properties>
-        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[170, 20]"/>
-        </Property>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[170, 20]"/>
-        </Property>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JGhostTextField(&quot;Arrivial Location&quot;)"/>
-      </AuxValues>
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="departureDateChooser">
     </Component>
@@ -313,5 +282,19 @@
         </DimensionLayout>
       </Layout>
     </Container>
+    <Component class="javax.swing.JComboBox" name="comboBoxDepartureLocation">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new javax.swing.DefaultComboBoxModel(new String[] { &quot;Departure Location&quot;, &quot;ANC&quot;, &quot;ATL&quot;, &quot;AUS&quot;, &quot;BDL&quot;, &quot;BNA&quot;, &quot;BOS&quot;, &quot;BWI&quot;, &quot;CLE&quot;, &quot;CLT&quot;, &quot;CMH&quot;, &quot;CVG&quot;, &quot;DCA&quot;, &quot;DEN&quot;, &quot;DFW&quot;, &quot;DTW&quot;, &quot;EWR&quot;, &quot;FLL&quot;, &quot;HNL&quot;, &quot;HOU&quot;, &quot;IAD&quot;, &quot;IAH&quot;, &quot;IND&quot;, &quot;JFK&quot;, &quot;LAS&quot;, &quot;LAX&quot;, &quot;LGA&quot;, &quot;MCI&quot;, &quot;MCO&quot;, &quot;MDW&quot;, &quot;MEM&quot;, &quot;MIA&quot;, &quot;MSP&quot;, &quot;MSY&quot;, &quot;OAK&quot;, &quot;ONT&quot;, &quot;ORD&quot;, &quot;PDX&quot;, &quot;PHL&quot;, &quot;PHX&quot;, &quot;PIT&quot;, &quot;RDU&quot;, &quot;RSW&quot;, &quot;SAN&quot;, &quot;SAT&quot;, &quot;SEA&quot;, &quot;SFO&quot;, &quot;SJC&quot;, &quot;SLC&quot;, &quot;SMF&quot;, &quot;SNA&quot;, &quot;STL&quot;, &quot;TPA&quot; })" type="code"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="comboBoxArrivalLocation">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new javax.swing.DefaultComboBoxModel(new String[] { &quot;Arrival Location&quot;, &quot;ANC&quot;, &quot;ATL&quot;, &quot;AUS&quot;, &quot;BDL&quot;, &quot;BNA&quot;, &quot;BOS&quot;, &quot;BWI&quot;, &quot;CLE&quot;, &quot;CLT&quot;, &quot;CMH&quot;, &quot;CVG&quot;, &quot;DCA&quot;, &quot;DEN&quot;, &quot;DFW&quot;, &quot;DTW&quot;, &quot;EWR&quot;, &quot;FLL&quot;, &quot;HNL&quot;, &quot;HOU&quot;, &quot;IAD&quot;, &quot;IAH&quot;, &quot;IND&quot;, &quot;JFK&quot;, &quot;LAS&quot;, &quot;LAX&quot;, &quot;LGA&quot;, &quot;MCI&quot;, &quot;MCO&quot;, &quot;MDW&quot;, &quot;MEM&quot;, &quot;MIA&quot;, &quot;MSP&quot;, &quot;MSY&quot;, &quot;OAK&quot;, &quot;ONT&quot;, &quot;ORD&quot;, &quot;PDX&quot;, &quot;PHL&quot;, &quot;PHX&quot;, &quot;PIT&quot;, &quot;RDU&quot;, &quot;RSW&quot;, &quot;SAN&quot;, &quot;SAT&quot;, &quot;SEA&quot;, &quot;SFO&quot;, &quot;SJC&quot;, &quot;SLC&quot;, &quot;SMF&quot;, &quot;SNA&quot;, &quot;STL&quot;, &quot;TPA&quot;})" type="code"/>
+        </Property>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>
